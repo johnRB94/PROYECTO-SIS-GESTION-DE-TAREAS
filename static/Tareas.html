@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - El Sabor de Marcona</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Un fondo más suave */
+        }
+        .worker-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+        .priority-badge { cursor: pointer; }
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .badge-priority-high { background-color: #dc3545; }
+        .badge-priority-medium { background-color: #ffc107; color: #000 !important; }
+        .badge-priority-low { background-color: #198754; }
+    </style>
+</head>
+<body>
+    <header class="bg-white shadow-sm py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <span class="fw-bold fs-5">R</span>
+                </div>
+                <div class="ms-3">
+                    <h1 class="h5 mb-0 fw-bold">El Sabor de Marcona</h1>
+                    <p class="text-muted small mb-0">Panel de Gestión de Tareas</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 45px; height: 45px;">
+                    <span class="fw-bold">A</span>
+                </div>
+                <div class="me-3">
+                    <p class="fw-bold mb-0">Admin</p>
+                    <p class="text-muted small mb-0">Gerente General</p>
+                </div>
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i> Salir
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-4">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-users me-2 text-primary"></i>Seleccionar Trabajador</h2>
+                    </div>
+                    <div class="card-body overflow-auto" style="max-height: 550px;">
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action worker-card" onclick="selectWorker(this, 'Carlos García', 'Chef Principal')">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">CG</div>
+                                    <div>
+                                        <h5 class="mb-1 fw-bold">Carlos García</h5>
+                                        <small class="text-muted">Chef Principal</small>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action worker-card" onclick="selectWorker(this, 'Mariana Rojas', 'Mesera')">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">MR</div>
+                                    <div>
+                                        <h5 class="mb-1 fw-bold">Mariana Rojas</h5>
+                                        <small class="text-muted">Mesera</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-tasks me-2 text-primary"></i>Asignar Nueva Tarea</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="currentAssignment" class="alert alert-info mb-4" style="display: none;">
+                            <p class="mb-0">Asignando tarea a: <strong id="selectedWorkerInfo"></strong></p>
+                        </div>
+
+                        <form id="taskForm">
+                            <div class="mb-3">
+                                <label for="taskTitle" class="form-label">Título de la Tarea</label>
+                                <input type="text" class="form-control" id="taskTitle" placeholder="Ej: Preparar Lomo Saltado especial" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="taskDescription" class="form-label">Descripción (Opcional)</label>
+                                <textarea class="form-control" id="taskDescription" rows="2"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="dueTime" class="form-label">Fecha Límite</label>
+                                    <input type="datetime-local" class="form-control" id="dueTime" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Prioridad</label>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-success w-100 priority-badge" onclick="selectPriority(this, 'Baja')">Baja</button>
+                                        <button type="button" class="btn btn-outline-warning w-100 priority-badge" onclick="selectPriority(this, 'Media')">Media</button>
+                                        <button type="button" class="btn btn-outline-danger w-100 priority-badge" onclick="selectPriority(this, 'Alta')">Alta</button>
+                                    </div>
+                                    <input type="hidden" id="taskPriority" required>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                <button type="button" class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-eraser me-1"></i> Limpiar</button>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Asignar Tarea</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-list-check me-2 text-primary"></i>Tareas Asignadas</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tarea</th>
+                                        <th>Asignado a</th>
+                                        <th>Prioridad</th>
+                                        <th>Fecha Límite</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="taskList">
+                                    <tr>
+                                        <td>
+                                            <p class="fw-bold mb-1">Preparar Ceviche Carretillero</p>
+                                            <p class="text-muted mb-0 small">Marinado especial con ají limo.</p>
+                                        </td>
+                                        <td>Carlos García</td>
+                                        <td><span class="badge rounded-pill text-white badge-priority-high">Alta</span></td>
+                                        <td>31/08/2025 12:30</td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm"><i class="fas fa-pencil-alt"></i></button>
+                                            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaskModal"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p class="fw-bold mb-1">Atender Mesa 5</p>
+                                            <p class="text-muted mb-0 small">Cliente frecuente, ofrecer bebida de cortesía.</p>
+                                        </td>
+                                        <td>Mariana Rojas</td>
+                                        <td><span class="badge rounded-pill badge-priority-medium">Media</span></td>
+                                        <td>31/08/2025 13:00</td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm"><i class="fas fa-pencil-alt"></i></button>
+                                            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaskModal"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    
+    <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteTaskModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar Tarea</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle"></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let selectedWorker = null;
+        let selectedPriority = null;
+        let taskToDelete = null; // Para saber qué tarea eliminar
+
+        const taskForm = document.getElementById('taskForm');
+        const taskList = document.getElementById('taskList');
+        const deleteModalEl = document.getElementById('deleteTaskModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        // Mostrar notificación
+        function showToast(title, message, type = 'success') {
+            const toast = new bootstrap.Toast(document.getElementById('notificationToast'));
+            const toastHeader = document.querySelector('#notificationToast .toast-header');
+            
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            
+            toastHeader.className = 'toast-header text-white'; // Reset class
+            toastHeader.classList.add(`bg-${type}`);
+            
+            toast.show();
+        }
+
+        // Seleccionar trabajador
+        function selectWorker(element, name, role) {
+            document.querySelectorAll('.worker-card').forEach(card => card.classList.remove('active', 'bg-light'));
+            element.classList.add('active', 'bg-light');
+            selectedWorker = { name, role };
+            
+            document.getElementById('currentAssignment').style.display = 'block';
+            document.getElementById('selectedWorkerInfo').textContent = `${name} (${role})`;
+        }
+        
+        // Seleccionar prioridad
+        function selectPriority(element, priority) {
+            selectedPriority = priority;
+            document.getElementById('taskPriority').value = priority;
+            
+            document.querySelectorAll('.priority-badge').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        // Limpiar formulario
+        function clearForm() {
+            taskForm.reset();
+            selectedPriority = null;
+            document.querySelectorAll('.priority-badge').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('taskPriority').value = '';
+            showToast('Formulario limpiado', 'Puedes asignar una nueva tarea.', 'info');
+        }
+
+        // ***** FUNCIÓN MEJORADA: AGREGAR TAREA A LA TABLA *****
+        function addTaskToTable(task) {
+            const priorityClass = {
+                'Alta': 'badge-priority-high',
+                'Media': 'badge-priority-medium',
+                'Baja': 'badge-priority-low'
+            };
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <p class="fw-bold mb-1">${task.title}</p>
+                    <p class="text-muted mb-0 small">${task.description}</p>
+                </td>
+                <td>${task.worker.name}</td>
+                <td><span class="badge rounded-pill text-white ${priorityClass[task.priority]}">${task.priority}</span></td>
+                <td>${new Date(task.dueTime).toLocaleString('es-PE')}</td>
+                <td>
+                    <button class="btn btn-outline-primary btn-sm"><i class="fas fa-pencil-alt"></i></button>
+                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaskModal"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            taskList.appendChild(newRow);
+        }
+
+        // Event listener para el envío del formulario
+        taskForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir el envío real del formulario
+
+            if (!selectedWorker) {
+                showToast('Error', 'Debes seleccionar un trabajador primero.', 'danger');
+                return;
+            }
+            if (!document.getElementById('taskPriority').value) {
+                showToast('Error', 'Debes seleccionar una prioridad.', 'danger');
+                return;
+            }
+
+            // Crear el objeto de la tarea con los datos del formulario
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                worker: selectedWorker,
+                priority: document.getElementById('taskPriority').value,
+                dueTime: document.getElementById('dueTime').value
+            };
+
+            // *** SIMULACIÓN DE BACKEND ***
+            // En un proyecto real, aquí iría la llamada fetch().
+            // Por ahora, solo mostramos el éxito y agregamos a la tabla.
+            console.log('Simulando envío de tarea:', taskData);
+            addTaskToTable(taskData);
+            showToast('¡Éxito!', `Tarea "${taskData.title}" asignada a ${taskData.worker.name}.`, 'success');
+            clearForm();
+        });
+
+        // Event listener para el modal de eliminación
+        deleteModalEl.addEventListener('show.bs.modal', function (event) {
+            // Identifica el botón que activó el modal
+            const button = event.relatedTarget;
+            // Encuentra la fila (tr) más cercana al botón para saber qué eliminar
+            taskToDelete = button.closest('tr');
+        });
+
+        // Event listener para el botón de confirmación de borrado
+        confirmDeleteBtn.addEventListener('click', function () {
+            if (taskToDelete) {
+                taskToDelete.remove(); // Elimina la fila de la tabla
+                showToast('Tarea Eliminada', 'La tarea ha sido eliminada correctamente.', 'info');
+                const modal = bootstrap.Modal.getInstance(deleteModalEl);
+                modal.hide(); // Oculta el modal
+                taskToDelete = null; // Limpia la variable
+            }
+        });
+
+        function logout() {
+            showToast('Cerrando Sesión', 'Redirigiendo a la página de inicio...', 'warning');
+            // Simula un retardo antes de redirigir
+            setTimeout(() => {
+                 window.location.href = '#'; // Cambiar a tu página de login
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
