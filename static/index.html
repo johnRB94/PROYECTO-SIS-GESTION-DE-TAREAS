@@ -10,6 +10,7 @@
     
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
         <a class="navbar-brand" href="#">
@@ -24,26 +25,26 @@
                         <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="modal" data-bs-target="#modalInicio"><i class="fa-solid fa-house me-2"></i>Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.html">Tareas</a>
+                        <a class="nav-link" href="tarea.html">Tareas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Registrar Incidencia</a>
+                        <a class="nav-link disabled" href="#">Registrar Incidencia</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Empleado Nuevo</a>
+                        <a class="nav-link disabled" href="#">Empleado Nuevo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Gestión de Menú</a>
+                        <a class="nav-link disabled" href="#">Gestión de Menú</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Gestión de Insumos</a>
+                        <a class="nav-link disabled" href="#">Gestión de Insumos</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Carousel Start -->
+    <!-- Carousel -->
     <div class="container-fluid p-0 mb-5">
         <div id="blog-carousel" class="carousel slide overlay-bottom" data-bs-ride="carousel">
             <div class="carousel-inner">
@@ -95,6 +96,9 @@
                                     <h5 class="bienvenido-titulo mb-4 px-3 py-2">
                                         <i class="fa-solid fa-user-tie"></i> BIENVENIDO
                                     </h5>
+                                    <div class="alert alert-danger d-none" id="error-msg">
+                                        Usuario o contraseña incorrectos
+                                    </div>
                                     <form>
                                         <div class="mb-3">
                                             <label class="form-label">
