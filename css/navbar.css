@@ -1,0 +1,22 @@
+.navbar-nav .nav-item .nav-link.active {
+    color: #FFD700 !important; 
+    background-color: transparent !important; 
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
