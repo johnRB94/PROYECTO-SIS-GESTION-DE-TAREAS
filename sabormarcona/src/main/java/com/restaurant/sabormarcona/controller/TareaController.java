@@ -1,0 +1,64 @@
+package com.restaurant.sabormarcona.controller;
+
+import com.restaurant.sabormarcona.model.Tarea;
+import com.restaurant.sabormarcona.service.TareaService;
+import com.restaurant.sabormarcona.service.TrabajadorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDateTime;
+
+@Controller
+@RequestMapping("/tareas")
+public class TareaController {
+    
+    @Autowired
+    private TareaService tareaService;
+    
+    @Autowired
+    private TrabajadorService trabajadorService;
+    
+    @GetMapping
+    public String listarTareas(Model model) {
+        model.addAttribute("tareas", tareaService.obtenerTodasLasTareas());
+        model.addAttribute("trabajadores", trabajadorService.obtenerTodosTrabajadores());
+        model.addAttribute("totalTareas", tareaService.obtenerTodasLasTareas().size());
+        model.addAttribute("tareasPendientes", tareaService.contarTareasPendientes());
+        return "tarea";
+    }
+    
+    @PostMapping("/agregar")
+    public String agregarTarea(@ModelAttribute Tarea tarea,
+                              @RequestParam("fechaLimiteStr") String fechaLimiteStr,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            // Convertir string a LocalDateTime
+            LocalDateTime fechaLimite = LocalDateTime.parse(fechaLimiteStr);
+            tarea.setFechaLimite(fechaLimite);
+            
+            tareaService.agregarTarea(tarea);
+            redirectAttributes.addFlashAttribute("mensaje", "Tarea agregada exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error al agregar la tarea: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+        }
+        
+        return "redirect:/tareas";
+    }
+    
+    @PostMapping("/eliminar/{id}")
+    public String eliminarTarea(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (tareaService.eliminarTarea(id)) {
+            redirectAttributes.addFlashAttribute("mensaje", "Tarea eliminada exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "info");
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", "No se pudo eliminar la tarea");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+        }
+        return "redirect:/tareas";
+    }
+}

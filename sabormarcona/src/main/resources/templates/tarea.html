@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - El Sabor de Marcona</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">
+                <img th:src="@{/img/logo.png}" alt="Logo" width="80" height="80" class="d-inline-block align-text-top rounded-circle">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" th:href="@{/principal}"><i class="fa-solid fa-house me-2"></i>Principal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" th:href="@{/tareas}"><i class="fa-solid fa-list me-2"></i>Tareas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" th:href="@{/incidencias}"><i class="fa-solid fa-clipboard-list me-2"></i>Registrar Incidencia</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" th:href="@{/empleados/nuevo}"><i class="fa-solid fa-user-plus me-2"></i>Empleado Nuevo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" th:href="@{/menu}"><i class="fa-solid fa-cogs me-2"></i>Gestión de Menú</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" th:href="@{/insumos}"><i class="fa-solid fa-boxes me-2"></i>Gestión de Insumos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/}" class="btn btn-outline-light"><i class="fa-solid fa-sign-out-alt me-2"></i> Cerrar sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <span class="fw-bold fs-5">R</span>
+                </div>
+                <div class="ms-3">
+                    <h1 class="h5 mb-0 fw-bold">El Sabor de Marcona</h1>
+                    <p class="text-muted small mb-0">Panel de Gestión de Tareas</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 45px; height: 45px;">
+                    <span class="fw-bold">A</span>
+                </div>
+                <div class="me-3">
+                    <p class="fw-bold mb-0">Admin</p>
+                    <p class="text-muted small mb-0">Gerente General</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container my-4">
+        <!-- Mensajes de éxito/error -->
+        <div th:if="${mensaje}" th:class="'alert alert-' + ${tipoMensaje} + ' alert-dismissible fade show'" role="alert">
+            <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row g-4">
+            <!-- Seleccionar Trabajador -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-users me-2 text-primary"></i>Seleccionar Trabajador</h2>
+                    </div>
+                    <div class="card-body overflow-auto" style="max-height: 550px;">
+                        <div class="list-group list-group-flush">
+                            <!-- Trabajadores dinámicos de Thymeleaf -->
+                            <div th:each="trabajador : ${trabajadores}" 
+                                 class="list-group-item list-group-item-action worker-card" 
+                                 th:data-nombre="${trabajador.nombre}"
+                                 th:data-rol="${trabajador.rol}"
+                                 onclick="selectWorkerFromData(this)">
+                                <div class="d-flex align-items-center">
+                                    <div th:class="'text-white rounded-circle d-flex align-items-center justify-content-center me-3 ' + ${trabajador.colorBadge}" 
+                                         style="width: 50px; height: 50px;" 
+                                         th:text="${trabajador.iniciales}">
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1 fw-bold" th:text="${trabajador.nombre}"></h5>
+                                        <small class="text-muted" th:text="${trabajador.rol}"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Si no hay trabajadores, mostrar mensaje -->
+                            <div th:if="${#lists.isEmpty(trabajadores)}" class="text-center py-4 text-muted">
+                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <p>No hay trabajadores registrados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asignar Nueva Tarea -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-tasks me-2 text-primary"></i>Asignar Nueva Tarea</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="currentAssignment" class="alert alert-info mb-4" style="display: none;">
+                            <p class="mb-0">Asignando tarea a: <strong id="selectedWorkerInfo"></strong></p>
+                        </div>
+                        
+                        <!-- Formulario de tarea -->
+                        <form th:action="@{/tareas/agregar}" method="post" id="taskForm">
+                            <div class="mb-3">
+                                <label for="titulo" class="form-label">Título de la Tarea</label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ej: Preparar Lomo Saltado especial" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción (Opcional)</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaLimiteStr" class="form-label">Fecha Límite</label>
+                                    <input type="datetime-local" class="form-control" id="fechaLimiteStr" name="fechaLimiteStr" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Prioridad</label>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-success w-100 priority-badge" onclick="selectPriority(this, 'Baja')">Baja</button>
+                                        <button type="button" class="btn btn-outline-warning w-100 priority-badge" onclick="selectPriority(this, 'Media')">Media</button>
+                                        <button type="button" class="btn btn-outline-danger w-100 priority-badge" onclick="selectPriority(this, 'Alta')">Alta</button>
+                                    </div>
+                                    <input type="hidden" id="prioridad" name="prioridad" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Campos ocultos para trabajador -->
+                            <input type="hidden" id="trabajador" name="trabajador">
+                            <input type="hidden" id="rol" name="rol">
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                                    <i class="fas fa-eraser me-1"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i> Asignar Tarea
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Tareas Asignadas -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h2 class="h5 mb-0 fw-bold">
+                            <i class="fas fa-list-check me-2 text-primary"></i>
+                            Tareas Asignadas 
+                            <span class="badge bg-primary" th:text="${totalTareas} ?: 0"></span>
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tarea</th>
+                                        <th>Asignado a</th>
+                                        <th>Prioridad</th>
+                                        <th>Fecha Límite</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Tareas dinámicas -->
+                                    <tr th:each="tarea : ${tareas}">
+                                        <td>
+                                            <p class="fw-bold mb-1" th:text="${tarea.titulo}"></p>
+                                            <p class="text-muted mb-0 small" th:text="${tarea.descripcion}"></p>
+                                        </td>
+                                        <td th:text="${tarea.trabajador}"></td>
+                                        <td>
+                                            <span th:class="'badge rounded-pill text-white ' + 
+                                                          (${tarea.prioridad} == 'Alta' ? 'bg-danger' : 
+                                                           ${tarea.prioridad} == 'Media' ? 'bg-warning' : 'bg-success')" 
+                                                  th:text="${tarea.prioridad}"></span>
+                                        </td>
+                                        <td th:text="${#temporals.format(tarea.fechaLimite, 'dd/MM/yyyy HH:mm')}"></td>
+                                        <td>
+                                            <span class="badge bg-info text-white" th:text="${tarea.estado}"></span>
+                                        </td>
+                                        <td>
+                                            <form th:action="@{'/tareas/eliminar/' + ${tarea.id}}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                        onclick="return confirm('¿Estás seguro de eliminar esta tarea?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Si no hay tareas -->
+                                    <tr th:if="${#lists.isEmpty(tareas)}">
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            <i class="fas fa-tasks fa-3x mb-3"></i>
+                                            <p>No hay tareas asignadas</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-dark text-center text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <span>&copy; 2025 Sabor de Marcona. Todos los derechos reservados.</span>
+                </div>
+                <div class="col-md-6">
+                    <a href="#" class="text-white me-3"><i class="fa-brands fa-facebook fa-lg"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fa-brands fa-instagram fa-lg"></i></a>
+                    <a href="#" class="text-white"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast para notificaciones -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Usar el archivo JavaScript existente -->
+    <script th:src="@{/js/tarea.js}"></script>
+</body>
+</html>
