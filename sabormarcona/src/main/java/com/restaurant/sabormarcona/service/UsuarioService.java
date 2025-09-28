@@ -18,9 +18,9 @@ public class UsuarioService {
     
     private void inicializarUsuarios() {
         usuarios.add(new Usuario("admin", "admin123", "Administrador", "ADMIN"));
-        usuarios.add(new Usuario("carlos", "chef123", "Carlos García", "CHEF"));
-        usuarios.add(new Usuario("mariana", "mesera123", "Mariana Rojas", "MESERO"));
-        usuarios.add(new Usuario("empleado", "emp123", "Empleado General", "EMPLEADO"));
+        usuarios.add(new Usuario("carlos", "carlos123", "Carlos García", "EMPLEADO"));
+        usuarios.add(new Usuario("mariana", "mariana123", "Mariana Rojas", "ADMIN"));
+        usuarios.add(new Usuario("empleado", "empleado123", "Empleado General", "EMPLEADO"));
     }
     
     public Optional<Usuario> autenticar(String username, String password) {

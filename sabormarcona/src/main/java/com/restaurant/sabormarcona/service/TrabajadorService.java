@@ -1,4 +1,3 @@
-// src/main/java/com/restaurant/sabormarcona/service/TrabajadorService.java
 package com.restaurant.sabormarcona.service;
 
 import com.restaurant.sabormarcona.model.Trabajador;
