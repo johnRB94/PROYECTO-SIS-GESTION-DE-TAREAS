@@ -27,18 +27,17 @@ public class TareaController {
         model.addAttribute("trabajadores", trabajadorService.obtenerTodosTrabajadores());
         model.addAttribute("totalTareas", tareaService.obtenerTodasLasTareas().size());
         model.addAttribute("tareasPendientes", tareaService.contarTareasPendientes());
-        return "vista/tarea";
+        return "vista/tarea"; // <-- Cambiado para que apunte a la plantilla correcta
     }
-    
+
     @PostMapping("/agregar")
     public String agregarTarea(@ModelAttribute Tarea tarea,
                               @RequestParam("fechaLimiteStr") String fechaLimiteStr,
                               RedirectAttributes redirectAttributes) {
         try {
-            // Convertir string a LocalDateTime
             LocalDateTime fechaLimite = LocalDateTime.parse(fechaLimiteStr);
             tarea.setFechaLimite(fechaLimite);
-            
+
             tareaService.agregarTarea(tarea);
             redirectAttributes.addFlashAttribute("mensaje", "Tarea agregada exitosamente");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");
@@ -46,10 +45,10 @@ public class TareaController {
             redirectAttributes.addFlashAttribute("mensaje", "Error al agregar la tarea: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
         }
-        
-        return "redirect:/tareas";
+
+        return "redirect:/tareas"; // <-- Redirección correcta
     }
-    
+
     @PostMapping("/eliminar/{id}")
     public String eliminarTarea(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         if (tareaService.eliminarTarea(id)) {
@@ -59,6 +58,6 @@ public class TareaController {
             redirectAttributes.addFlashAttribute("mensaje", "No se pudo eliminar la tarea");
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
         }
-        return "redirect:/tareas";
+        return "redirect:/tareas"; // <-- Redirección correcta
     }
 }

@@ -1,0 +1,49 @@
+/* tarea.css: estilos extraídos de tarea.html para cumplir sugerencias */
+
+.circulo-principal {
+    width: 50px;
+    height: 50px;
+    background-color: #0d6efd; /* Bootstrap primary */
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.circulo-admin {
+    width: 45px;
+    height: 45px;
+    background-color: #0dcaf0; /* Bootstrap info */
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+.overflow-auto-max {
+    max-height: 550px;
+    overflow: auto;
+}
+.worker-card-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+#currentAssignment {
+    display: none;
+}
+.form-inline {
+    display: inline;
+}
+.toast-pos {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 11;
+}
