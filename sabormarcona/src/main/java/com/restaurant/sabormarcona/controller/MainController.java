@@ -12,7 +12,7 @@ public class MainController {
     @GetMapping("/")
     public String inicio(Model model) {
         model.addAttribute("titulo", "Sabor de Marcona");
-        return "index";
+        return "vista/index";
     }
     
     @GetMapping("/principal")
@@ -26,6 +26,6 @@ public class MainController {
         model.addAttribute("usuario", usuario.getNombre());
         model.addAttribute("rol", usuario.getRol());
         model.addAttribute("username", usuario.getUsername());
-        return "principal";
+        return "vista/principal";
     }
 }

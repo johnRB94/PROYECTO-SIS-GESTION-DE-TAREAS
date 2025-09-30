@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,11 +24,9 @@ public class MenuController {
     // LISTADO + FILTRO
     @GetMapping
     public String listado(@RequestParam(value = "categoryId", required = false) Long categoryId,
-                          Model model,
-                          HttpSession session) {
-        // (igual que principal) si manejan sesión:
-        // Object usuario = session.getAttribute("usuarioLogueado"); if (usuario == null) return "redirect:/";
-
+                        Model model,
+                        HttpSession session,
+                        HttpServletRequest request) {
         List<MenuCategory> categorias = menuService.findAllCategories();
         List<MenuItem> items = (categoryId == null) ?
                 menuService.findAllItems() : menuService.findItemsByCategory(categoryId);
@@ -35,14 +34,15 @@ public class MenuController {
         model.addAttribute("categorias", categorias);
         model.addAttribute("items", items);
         model.addAttribute("categoryId", categoryId);
-        return "menu"; // templates/menu.html
+        model.addAttribute("currentUri", request.getRequestURI()); // <-- agrega esto
+        return "vista/menu";
     }
 
     // FORM AGREGAR (GET)
     @GetMapping("/add")
     public String formAgregar(Model model) {
         model.addAttribute("categorias", menuService.findAllCategories());
-        return "menu_form"; // templates/menu_form.html
+        return "vista/menu_form"; // templates/menu_form.html
     }
 
     // AGREGAR (POST)
@@ -95,7 +95,7 @@ public class MenuController {
     @GetMapping("/categories")
     public String categorias(Model model) {
         model.addAttribute("categorias", menuService.findAllCategories());
-        return "menu_categories"; // templates/menu_categories.html
+        return "vista/menu_categories"; // templates/menu_categories.html
     }
 
     @PostMapping("/categories/add")

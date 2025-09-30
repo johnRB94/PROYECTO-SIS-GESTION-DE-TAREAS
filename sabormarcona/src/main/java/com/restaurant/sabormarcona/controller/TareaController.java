@@ -27,7 +27,7 @@ public class TareaController {
         model.addAttribute("trabajadores", trabajadorService.obtenerTodosTrabajadores());
         model.addAttribute("totalTareas", tareaService.obtenerTodasLasTareas().size());
         model.addAttribute("tareasPendientes", tareaService.contarTareasPendientes());
-        return "tarea";
+        return "vista/tarea";
     }
     
     @PostMapping("/agregar")

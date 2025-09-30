@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{componentes/head.html}"></head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{componentes/navbar.html}"></div>
+    
+    <!-- Contenido principal -->
+    <main class="container py-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="p-5 bg-light rounded shadow text-center mb-5">
+                    <h2>Bienvenido, Restaurant "El Sabor de Marcona"</h2>
+                    <p>Tu rol es: <span th:text="${rol} ?: 'Administrador'"></span></p>
+                    <p>Usuario: <span th:text="${usuario} ?: 'Admin'"></span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{componentes/footer.html}"></div>
+
+</body>
+</html>
