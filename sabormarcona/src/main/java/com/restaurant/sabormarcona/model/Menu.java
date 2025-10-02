@@ -16,22 +16,12 @@ public class Menu {
         this.nombre = nombre;
     }
 
-    // Getters y Setters de Menu
-    public Long getId() {
-        return id;
-    }
+    // Getters y Setters 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
     // Clase interna para representar los ítems del menú
     public static class MenuItem {

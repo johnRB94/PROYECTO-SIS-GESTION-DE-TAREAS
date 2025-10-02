@@ -22,7 +22,7 @@ public class InsumoController {
     @GetMapping
     public String listarInsumos (Model model) {
         model.addAttribute ("insumos", insumoService.obtenerTodosLosInsumos ());
-        model.addAttribute ("insumo", new Insumo ()); // objeto vacío para el form
+        model.addAttribute ("insumo", new Insumo ()); 
         return "vista/insumo";
     }
 

@@ -15,7 +15,6 @@ public class Incidencia {
     
     public Incidencia() {}
 
-    // Constructor para inicializar datos (para el Service)
     public Incidencia(Long id, String titulo, String descripcion, String trabajador, String rol, String prioridad, LocalDateTime fechaLimite, String estado) {
         this.id = id;
         this.titulo = titulo;

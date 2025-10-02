@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // --- VARIABLES ---
-    let rowToEdit = null;
+   let rowToEdit = null;
     let rowToDelete = null;
 
     // --- SELECTORES ---
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- FUNCIONES ---
 
     function showToast(title, message, type = 'success') {
-        // Puedes agregar un toast más adelante si deseas notificaciones
         alert(`${title}: ${message}`);
     }
 
@@ -47,8 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         updateTotalInventory();
     }
-
-    // --- EVENTOS ---
 
     // Agregar producto
     productForm.addEventListener('submit', function (e) {

@@ -12,11 +12,9 @@ public class Tarea {
     private LocalDateTime fechaLimite;
     private String estado;
 
-    // Constructor sin argumentos (reemplaza @NoArgsConstructor)
     public Tarea() {
     }
 
-    // Constructor con todos los argumentos (reemplaza @AllArgsConstructor)
     public Tarea(Long id, String titulo, String descripcion, String trabajador,
                  String rol, String prioridad, LocalDateTime fechaLimite, String estado) {
         this.id = id;
@@ -29,7 +27,6 @@ public class Tarea {
         this.estado = estado;
     }
 
-    // Constructor adicional para facilitar la creación (el original del usuario)
     public Tarea(String titulo, String descripcion, String trabajador,
                  String rol, String prioridad, LocalDateTime fechaLimite) {
         this.titulo = titulo;
@@ -41,7 +38,7 @@ public class Tarea {
         this.estado = "Pendiente"; 
     }
 
-    // ===== Getters y Setters =====
+    // Getters y Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

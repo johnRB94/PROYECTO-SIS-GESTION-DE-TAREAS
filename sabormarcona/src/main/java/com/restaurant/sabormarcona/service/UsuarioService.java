@@ -9,7 +9,6 @@ import java.util.Optional;
 @Service
 public class UsuarioService {
 
-    // Simulación de la base de datos con ArrayList
     private final List<Usuario> usuarios = new ArrayList<>();
     private long nextId = 1;
 
@@ -18,7 +17,6 @@ public class UsuarioService {
     }
 
     private void inicializarUsuarios() {
-        // Inicialización de datos de ejemplo
         Usuario u1 = new Usuario("admin", "admin123", "Administrador", "ADMIN");
         u1.setId(nextId++);
         usuarios.add(u1);
@@ -32,10 +30,8 @@ public class UsuarioService {
         usuarios.add(u3);
     }
 
-    // Método para agregar un nuevo usuario
     public Usuario agregarUsuario(Usuario nuevoUsuario) {
         nuevoUsuario.setId(nextId++);
-        // Asignar rol y nombre por defecto
         nuevoUsuario.setRol("EMPLEADO");
         nuevoUsuario.setNombre("Empleado Nuevo - " + nuevoUsuario.getUsername());
         usuarios.add(nuevoUsuario);
@@ -48,7 +44,6 @@ public class UsuarioService {
                 .anyMatch(usuario -> usuario.getUsername().equalsIgnoreCase(username));
     }
     
-    // Otros métodos...
     public Optional<Usuario> autenticar(String username, String password) {
         return usuarios.stream()
             .filter(usuario -> usuario.getUsername().equals(username)

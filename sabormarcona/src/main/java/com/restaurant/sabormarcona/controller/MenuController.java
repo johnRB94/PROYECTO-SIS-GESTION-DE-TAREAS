@@ -24,7 +24,6 @@ public class MenuController {
                            HttpSession session,
                            HttpServletRequest request) {
         List<Menu> categorias = menuService.findAllCategories();
-        // CORRECCIÓN: Se usa List<Menu.MenuItem>
         List<Menu.MenuItem> items = (categoryId == null) ?
                 menuService.findAllItems() : menuService.findItemsByCategory(categoryId);
         model.addAttribute("categorias", categorias);

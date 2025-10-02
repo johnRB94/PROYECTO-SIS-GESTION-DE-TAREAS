@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Selectores de elementos del DOM
     const taskForm = document.getElementById('taskForm');
     
-    // --- FUNCIONES PRINCIPALES ---
-
     // Mostrar notificación (Toast)
     function showToast(title, message, type = 'success') {
         const toastEl = document.getElementById('notificationToast');
@@ -267,7 +265,7 @@ window.editarTarea = async function(id) {
     }
 };
 
-// *Opcional: Añadir un listener de submit para el formulario del modal para mostrar un toast antes de enviar
+
 const editTaskForm = document.getElementById('editTaskForm');
 if (editTaskForm) {
     editTaskForm.addEventListener('submit', function(e) {

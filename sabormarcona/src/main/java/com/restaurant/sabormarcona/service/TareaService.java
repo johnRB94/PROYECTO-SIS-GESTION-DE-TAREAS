@@ -16,7 +16,6 @@ public class TareaService {
     private final AtomicLong contadorId = new AtomicLong(1);
     
     public TareaService() {
-        // Datos de prueba
         inicializarDatosPrueba();
     }
     
@@ -52,7 +51,7 @@ public class TareaService {
         if (tarea.getEstado() == null) {
             tarea.setEstado("Pendiente");
         }
-        tareas.add(0, tarea); // Agregar al inicio para mostrar las más recientes primero
+        tareas.add(0, tarea); 
         return tarea;
     }
     
@@ -60,28 +59,24 @@ public class TareaService {
         return tareas.removeIf(tarea -> tarea.getId().equals(id));
     }
     
-    // TareaService.java (Añadir este método)
-
-public Tarea modificarTarea(Tarea tareaModificada) {
-    // Busca la tarea original por ID
-    Optional<Tarea> optionalTarea = obtenerTareaPorId(tareaModificada.getId());
-    
-    if (optionalTarea.isPresent()) {
-        Tarea tareaOriginal = optionalTarea.get();
+    public Tarea modificarTarea(Tarea tareaModificada) {
+        Optional<Tarea> optionalTarea = obtenerTareaPorId(tareaModificada.getId());
         
-        // Actualiza los campos del objeto mutable
-        tareaOriginal.setTitulo(tareaModificada.getTitulo());
-        tareaOriginal.setDescripcion(tareaModificada.getDescripcion());
-        tareaOriginal.setTrabajador(tareaModificada.getTrabajador());
-        tareaOriginal.setRol(tareaModificada.getRol());
-        tareaOriginal.setPrioridad(tareaModificada.getPrioridad());
-        tareaOriginal.setFechaLimite(tareaModificada.getFechaLimite());
-        tareaOriginal.setEstado(tareaModificada.getEstado());
-        
-        return tareaOriginal; // Retorna la tarea actualizada
+        if (optionalTarea.isPresent()) {
+            Tarea tareaOriginal = optionalTarea.get();
+            
+            tareaOriginal.setTitulo(tareaModificada.getTitulo());
+            tareaOriginal.setDescripcion(tareaModificada.getDescripcion());
+            tareaOriginal.setTrabajador(tareaModificada.getTrabajador());
+            tareaOriginal.setRol(tareaModificada.getRol());
+            tareaOriginal.setPrioridad(tareaModificada.getPrioridad());
+            tareaOriginal.setFechaLimite(tareaModificada.getFechaLimite());
+            tareaOriginal.setEstado(tareaModificada.getEstado());
+            
+            return tareaOriginal; 
+        }
+        return null; 
     }
-    return null; // Tarea no encontrada
-}
     public List<Tarea> obtenerTareasPorPrioridad(String prioridad) {
         return tareas.stream()
                 .filter(tarea -> tarea.getPrioridad().equalsIgnoreCase(prioridad))

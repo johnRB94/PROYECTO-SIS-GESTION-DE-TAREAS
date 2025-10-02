@@ -9,23 +9,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-// import org.springframework.web.bind.annotation.RequestMapping; // ¡QUITAR O COMENTAR ESTA ANOTACIÓN!
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-// @RequestMapping("/empleados") // <--- ¡ELIMINAR ESTA LÍNEA!
 public class NuevoController {
 
     @Autowired
     private UsuarioService usuarioService;
 
-    // Mapea la URL GET a /nuevo y retorna la plantilla 'nuevo.html'
     @GetMapping("/nuevo")
     public String mostrarFormularioRegistro(Model model) {
         if (!model.containsAttribute("usuario")) {
              model.addAttribute("usuario", new Usuario());
         }
-        return "vista/nuevo"; // Nombre del archivo HTML en src/main/resources/templates/
+        return "vista/nuevo"; 
     }
 
     // Mapea la URL POST a /nuevo
@@ -35,9 +32,7 @@ public class NuevoController {
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
 
-        // ... (Lógica de validación)
-
-        if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty() || 
+       if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty() || 
             usuario.getPassword() == null || usuario.getPassword().trim().isEmpty() || 
             confirmarContrasena == null || confirmarContrasena.trim().isEmpty() ||
             !usuario.getPassword().equals(confirmarContrasena) ||
