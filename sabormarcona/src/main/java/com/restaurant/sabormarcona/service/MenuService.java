@@ -1,7 +1,6 @@
 package com.restaurant.sabormarcona.service;
 
-import com.restaurant.sabormarcona.model.MenuCategory;
-import com.restaurant.sabormarcona.model.MenuItem;
+import com.restaurant.sabormarcona.model.Menu;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,17 +11,18 @@ import java.util.stream.Collectors;
 @Service
 public class MenuService {
 
-    private final List<MenuCategory> categories = new ArrayList<>();
-    private final List<MenuItem> items = new ArrayList<>();
+    private final List<Menu> categories = new ArrayList<>();
+    // CORRECCIÓN: Se usa Menu.MenuItem
+    private final List<Menu.MenuItem> items = new ArrayList<>(); 
     private final AtomicLong catSeq = new AtomicLong(0);
     private final AtomicLong itemSeq = new AtomicLong(0);
 
     public MenuService() {
         // Semilla de categorías
-        MenuCategory entradas = addCategory("Entradas");
-        MenuCategory fondos   = addCategory("Platos de Fondo");
-        MenuCategory bebidas  = addCategory("Bebidas");
-        MenuCategory postres  = addCategory("Postres");
+        Menu entradas = addCategory("Entradas");
+        Menu fondos   = addCategory("Platos de Fondo");
+        Menu bebidas  = addCategory("Bebidas");
+        Menu postres  = addCategory("Postres");
 
         // Semilla de ítems del menú
         addItem("Ceviche clásico", new BigDecimal("28.00"), "Pescado fresco con limón y ají limo", entradas, true);
@@ -32,39 +32,41 @@ public class MenuService {
     }
 
     // ===== CATEGORÍAS =====
-    public List<MenuCategory> findAllCategories() {
+    public List<Menu> findAllCategories() {
         return new ArrayList<>(categories);
     }
 
-    public MenuCategory addCategory(String nombre) {
-        MenuCategory c = new MenuCategory(catSeq.incrementAndGet(), nombre);
+    public Menu addCategory(String nombre) {
+        Menu c = new Menu(catSeq.incrementAndGet(), nombre);
         categories.add(c);
         return c;
     }
 
     public boolean deleteCategory(Long id) {
-        // Si eliminas categoría, no tocamos los ítems en esta demo.
         return categories.removeIf(c -> Objects.equals(c.getId(), id));
     }
 
-    public Optional<MenuCategory> findCategoryById(Long id) {
+    public Optional<Menu> findCategoryById(Long id) {
         return categories.stream().filter(c -> Objects.equals(c.getId(), id)).findFirst();
     }
 
     // ===== ÍTEMS =====
-    public List<MenuItem> findAllItems() {
+    // CORRECCIÓN: Se usa Menu.MenuItem
+    public List<Menu.MenuItem> findAllItems() { 
         return new ArrayList<>(items);
     }
 
-    public List<MenuItem> findItemsByCategory(Long categoryId) {
+    // CORRECCIÓN: Se usa Menu.MenuItem
+    public List<Menu.MenuItem> findItemsByCategory(Long categoryId) { 
         if (categoryId == null) return findAllItems();
         return items.stream()
                 .filter(i -> i.getCategoria() != null && Objects.equals(i.getCategoria().getId(), categoryId))
                 .collect(Collectors.toList());
     }
 
-    public MenuItem addItem(String nombre, BigDecimal precio, String descripcion, MenuCategory categoria, boolean disponible) {
-        MenuItem item = new MenuItem(itemSeq.incrementAndGet(), nombre, precio, descripcion, categoria, disponible);
+    // CORRECCIÓN: Se usa Menu.MenuItem en el tipo de retorno y la inicialización
+    public Menu.MenuItem addItem(String nombre, BigDecimal precio, String descripcion, Menu categoria, boolean disponible) {
+        Menu.MenuItem item = new Menu.MenuItem(itemSeq.incrementAndGet(), nombre, precio, descripcion, categoria, disponible);
         items.add(item);
         return item;
     }
@@ -73,7 +75,8 @@ public class MenuService {
         return items.removeIf(i -> Objects.equals(i.getId(), id));
     }
 
-    public Optional<MenuItem> findItem(Long id) {
+    // CORRECCIÓN: Se usa Menu.MenuItem
+    public Optional<Menu.MenuItem> findItem(Long id) { 
         return items.stream().filter(i -> Objects.equals(i.getId(), id)).findFirst();
     }
 }

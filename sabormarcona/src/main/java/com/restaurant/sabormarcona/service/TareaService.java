@@ -60,6 +60,28 @@ public class TareaService {
         return tareas.removeIf(tarea -> tarea.getId().equals(id));
     }
     
+    // TareaService.java (Añadir este método)
+
+public Tarea modificarTarea(Tarea tareaModificada) {
+    // Busca la tarea original por ID
+    Optional<Tarea> optionalTarea = obtenerTareaPorId(tareaModificada.getId());
+    
+    if (optionalTarea.isPresent()) {
+        Tarea tareaOriginal = optionalTarea.get();
+        
+        // Actualiza los campos del objeto mutable
+        tareaOriginal.setTitulo(tareaModificada.getTitulo());
+        tareaOriginal.setDescripcion(tareaModificada.getDescripcion());
+        tareaOriginal.setTrabajador(tareaModificada.getTrabajador());
+        tareaOriginal.setRol(tareaModificada.getRol());
+        tareaOriginal.setPrioridad(tareaModificada.getPrioridad());
+        tareaOriginal.setFechaLimite(tareaModificada.getFechaLimite());
+        tareaOriginal.setEstado(tareaModificada.getEstado());
+        
+        return tareaOriginal; // Retorna la tarea actualizada
+    }
+    return null; // Tarea no encontrada
+}
     public List<Tarea> obtenerTareasPorPrioridad(String prioridad) {
         return tareas.stream()
                 .filter(tarea -> tarea.getPrioridad().equalsIgnoreCase(prioridad))
@@ -71,4 +93,5 @@ public class TareaService {
                 .filter(tarea -> "Pendiente".equals(tarea.getEstado()))
                 .count();
     }
+
 }

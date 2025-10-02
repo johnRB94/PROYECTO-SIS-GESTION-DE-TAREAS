@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class MainController {
+public class PrincipalController {
     
     @GetMapping("/")
     public String inicio(Model model) {
         model.addAttribute("titulo", "Sabor de Marcona");
-        return "vista/index";
+        return "vista/inicio";
     }
     
     @GetMapping("/principal")

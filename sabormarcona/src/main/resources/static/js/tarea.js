@@ -184,10 +184,96 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Función para editar tarea (para implementar en el futuro)
-    window.editarTarea = function(id) {
-        console.log('Editar tarea con ID:', id);
-        // Implementar modal de edición en el futuro
-    };
+    // Tarea.js (Reemplazar/Añadir)
+
+// Función auxiliar para manejar la selección de prioridad en el modal
+window.selectPriorityEdit = function(element, priority) {
+    // Lógica para marcar el botón de prioridad en el modal
+    document.querySelectorAll('.priority-badge-edit').forEach(btn => {
+        btn.classList.remove('active', 'btn-success', 'btn-warning', 'btn-danger');
+        btn.classList.add('btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+    });
+
+    element.classList.add('active');
+    element.classList.remove('btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+
+    if (priority === 'Baja') {
+        element.classList.add('btn-success');
+    } else if (priority === 'Media') {
+        element.classList.add('btn-warning');
+    } else if (priority === 'Alta') {
+        element.classList.add('btn-danger');
+    }
+
+    // Guardar prioridad seleccionada en el campo oculto del modal de edición
+    const prioridadField = document.getElementById('editPrioridad');
+    if (prioridadField) prioridadField.value = priority;
+};
+
+
+// Función principal para editar tarea (Reemplaza el placeholder en la línea 938)
+window.editarTarea = async function(id) {
+    console.log('Cargando tarea con ID:', id);
+
+    // 1. Fetch de la tarea por ID
+    try {
+        const response = await fetch(`/tareas/obtener/${id}`);
+        if (!response.ok) {
+            throw new Error('No se pudo obtener la tarea');
+        }
+        const tarea = await response.json();
+        
+        // 2. Llenar el formulario del modal
+        document.getElementById('editId').value = tarea.id;
+        document.getElementById('editTitulo').value = tarea.titulo;
+        document.getElementById('editDescripcion').value = tarea.descripcion;
+        
+        // Formatear la fecha para input datetime-local (yyyy-MM-ddThh:mm)
+        // Se asume que el backend devuelve un array [año, mes, día, hora, minuto] o un string ISO
+        let fechaISO;
+        if (Array.isArray(tarea.fechaLimite)) {
+            const [y, m, d, h, min] = tarea.fechaLimite;
+            const pad = (num) => num.toString().padStart(2, '0');
+            fechaISO = `${y}-${pad(m)}-${pad(d)}T${pad(h)}:${pad(min)}`;
+        } else {
+            // Si es un string ISO (ej: 2025-10-01T15:30:00.123)
+            fechaISO = tarea.fechaLimite.substring(0, 16); 
+        }
+        document.getElementById('editFechaLimiteStr').value = fechaISO;
+
+        // Prioridad: Seleccionar el botón de prioridad en el modal
+        const prioridad = tarea.prioridad;
+        document.querySelectorAll('.priority-badge-edit').forEach(btn => {
+            if (btn.textContent.trim() === prioridad) {
+                window.selectPriorityEdit(btn, prioridad); // Usa la nueva función
+            }
+        });
+
+        // Estado: Seleccionar la opción correcta
+        document.getElementById('editEstado').value = tarea.estado;
+
+        // Trabajador: Llenar campos ocultos y la info visible (no se puede cambiar el trabajador al editar)
+        document.getElementById('editTrabajador').value = tarea.trabajador;
+        document.getElementById('editRol').value = tarea.rol;
+        document.getElementById('editWorkerInfo').textContent = `${tarea.trabajador} (${tarea.rol})`;
+        
+        // 3. Mostrar el modal
+        const editModal = new bootstrap.Modal(document.getElementById('modalEditarTarea'));
+        editModal.show();
+
+    } catch (error) {
+        console.error('Error al editar tarea:', error);
+        window.showToast('Error', 'No se pudo cargar la tarea para edición.', 'danger');
+    }
+};
+
+// *Opcional: Añadir un listener de submit para el formulario del modal para mostrar un toast antes de enviar
+const editTaskForm = document.getElementById('editTaskForm');
+if (editTaskForm) {
+    editTaskForm.addEventListener('submit', function(e) {
+        window.showToast('Enviando...', `Actualizando tarea...`, 'info');
+    });
+}
 
     // --- INICIALIZACIÓN ---
     console.log('Tarea.js cargado correctamente para Spring Boot + Thymeleaf');

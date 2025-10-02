@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Controller
-public class AuthController {
+public class InicioController {
     
     @Autowired
     private UsuarioService usuarioService;

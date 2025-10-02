@@ -2,7 +2,7 @@ package com.restaurant.sabormarcona.controller;
 
 import com.restaurant.sabormarcona.model.Tarea;
 import com.restaurant.sabormarcona.service.TareaService;
-import com.restaurant.sabormarcona.service.TrabajadorService;
+import com.restaurant.sabormarcona.service.PrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +19,7 @@ public class TareaController {
     private TareaService tareaService;
     
     @Autowired
-    private TrabajadorService trabajadorService;
+    private PrincipalService trabajadorService;
     
     @GetMapping
     public String listarTareas(Model model) {
@@ -27,7 +27,7 @@ public class TareaController {
         model.addAttribute("trabajadores", trabajadorService.obtenerTodosTrabajadores());
         model.addAttribute("totalTareas", tareaService.obtenerTodasLasTareas().size());
         model.addAttribute("tareasPendientes", tareaService.contarTareasPendientes());
-        return "vista/tarea"; // <-- Cambiado para que apunte a la plantilla correcta
+        return "vista/tarea"; 
     }
 
     @PostMapping("/agregar")
@@ -46,7 +46,7 @@ public class TareaController {
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
         }
 
-        return "redirect:/tareas"; // <-- Redirección correcta
+        return "redirect:/tareas"; 
     }
 
     @PostMapping("/eliminar/{id}")
@@ -58,6 +58,36 @@ public class TareaController {
             redirectAttributes.addFlashAttribute("mensaje", "No se pudo eliminar la tarea");
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
         }
-        return "redirect:/tareas"; // <-- Redirección correcta
+        return "redirect:/tareas"; 
+    }
+
+    @GetMapping("/obtener/{id}")
+    @ResponseBody
+    public Tarea obtenerTareaJson(@PathVariable Long id) {
+        return tareaService.obtenerTareaPorId(id).orElse(null);
+    }
+
+    @PostMapping("/actualizar")
+    public String actualizarTarea(@ModelAttribute Tarea tarea,
+                                @RequestParam("fechaLimiteStr") String fechaLimiteStr,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            LocalDateTime fechaLimite = LocalDateTime.parse(fechaLimiteStr);
+            tarea.setFechaLimite(fechaLimite);
+            
+            Tarea tareaActualizada = tareaService.modificarTarea(tarea);
+            
+            if (tareaActualizada != null) {
+                redirectAttributes.addFlashAttribute("mensaje", "Tarea actualizada exitosamente");
+                redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            } else {
+                redirectAttributes.addFlashAttribute("mensaje", "Error: No se encontró la tarea para actualizar.");
+                redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error al actualizar la tarea: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+        }
+        return "redirect:/tareas";
     }
 }

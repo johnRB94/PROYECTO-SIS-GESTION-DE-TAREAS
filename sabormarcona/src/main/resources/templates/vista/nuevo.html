@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="componentes/head :: head"></head>
+<body class="bg-light d-flex flex-column min-vh-100">
+<div th:replace="~{componentes/navbar.html}"></div>
+    <div class="container d-flex justify-content-center align-items-center my-5 flex-grow-1">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-6">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3>Registro de Nuevo Empleado</h3>
+                    </div>
+                    <div class="card-body">
+                    
+                        <div th:if="${registroExitoso}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span th:text="${mensajeExito}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        
+                        <div th:if="${error}" class="alert alert-danger" role="alert">
+                            <span th:text="${error}"></span>
+                        </div>
+
+                        <form th:action="@{/nuevo}" th:object="${usuario}" method="post">
+                            
+                            <div class="mb-4 text-center">
+                                <h5 class="mb-2 text-primary">Rol Asignado:</h5>
+                                <div class="badge bg-primary text-white p-2">
+                                    <i class="fas fa-user-tie"></i> EMPLEADO
+                                </div>
+                                <small class="text-muted d-block mt-2">Los empleados registrados desde aquí tendrán el rol "EMPLEADO".</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Nombre de Usuario</label>
+                                <input type="text" class="form-control" 
+                                       id="username" 
+                                       th:field="*{username}" 
+                                       placeholder="Ej: nuevo.empleado"
+                                       required>
+                                <small class="form-text text-muted">Mínimo 4 caracteres.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" 
+                                       id="password" 
+                                       th:field="*{password}" 
+                                       required>
+                                <small class="form-text text-muted">Mínimo 6 caracteres.</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
+                                <input type="password" class="form-control" 
+                                       id="confirmarContrasena" 
+                                       name="confirmarContrasena"
+                                       required>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg text-white">
+                                    <i class="fas fa-user-plus"></i> Registrar Empleado
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+       
+</body>
+<div th:replace="componentes/footer :: footer"></div>  
+</html>
