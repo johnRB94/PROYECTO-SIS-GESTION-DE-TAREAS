@@ -16,31 +16,18 @@ public class IncidenciaController {
     @Autowired
     private IncidenciaService incidenciaService;
 
-    /**
-     * Muestra la tabla principal de incidencias.
-     * Mapea a src/main/resources/templates/incidencia.html
-     */
     @GetMapping
     public String listarIncidencias(Model model) {
         model.addAttribute("incidencias", incidenciaService.obtenerTodasLasIncidencias());
         return "vista/incidencia"; 
     }
     
-    /**
-     * Endpoint REST para obtener una incidencia por ID. 
-     * Usado por el JavaScript del modal de edición (incidencia.js).
-     * Retorna un objeto JSON.
-     */
     @GetMapping("/obtener/{id}")
     @ResponseBody
     public Optional<Incidencia> obtenerIncidenciaJson(@PathVariable Long id) {
         return incidenciaService.obtenerIncidenciaPorId(id);
     }
     
-    /**
-     * PROCESAR REGISTRO DE NUEVA INCIDENCIA.
-     * Recibe los datos del formulario del Modal de Registro.
-     */
     @PostMapping("/registrar")
     public String registrarIncidencia(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
         try {
@@ -52,17 +39,12 @@ public class IncidenciaController {
             redirectAttributes.addFlashAttribute("mensaje", "Incidencia registrada exitosamente.");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");
         } catch (Exception e) {
-            // Captura errores de binding (como fechas) o del servicio.
             redirectAttributes.addFlashAttribute("mensaje", "Error al registrar la incidencia: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
         }
         return "redirect:/incidencias";
     }
 
-    /**
-     * Procesar la actualización de la incidencia (desde el Modal de Edición).
-     * El objeto 'incidencia' debe incluir el ID.
-     */
     @PostMapping("/actualizar")
     public String actualizarIncidencia(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
         try {
@@ -82,9 +64,6 @@ public class IncidenciaController {
         return "redirect:/incidencias";
     }
     
-    /**
-     * Procesar la eliminación de la incidencia.
-     */
     @PostMapping("/eliminar/{id}")
     public String eliminarIncidencia(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

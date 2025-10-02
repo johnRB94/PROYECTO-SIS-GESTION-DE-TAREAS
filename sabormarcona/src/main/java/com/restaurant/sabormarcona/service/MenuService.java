@@ -12,26 +12,22 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final List<Menu> categories = new ArrayList<>();
-    // CORRECCIÓN: Se usa Menu.MenuItem
     private final List<Menu.MenuItem> items = new ArrayList<>(); 
     private final AtomicLong catSeq = new AtomicLong(0);
     private final AtomicLong itemSeq = new AtomicLong(0);
 
     public MenuService() {
-        // Semilla de categorías
         Menu entradas = addCategory("Entradas");
         Menu fondos   = addCategory("Platos de Fondo");
         Menu bebidas  = addCategory("Bebidas");
         Menu postres  = addCategory("Postres");
 
-        // Semilla de ítems del menú
         addItem("Ceviche clásico", new BigDecimal("28.00"), "Pescado fresco con limón y ají limo", entradas, true);
         addItem("Arroz con mariscos", new BigDecimal("32.00"), "Mixto con mariscos de la casa", fondos, true);
         addItem("Chicha morada", new BigDecimal("8.00"), "Vaso 500ml", bebidas, true);
         addItem("Suspiro a la limeña", new BigDecimal("12.00"), "Porción individual", postres, true);
     }
 
-    // ===== CATEGORÍAS =====
     public List<Menu> findAllCategories() {
         return new ArrayList<>(categories);
     }
@@ -50,13 +46,10 @@ public class MenuService {
         return categories.stream().filter(c -> Objects.equals(c.getId(), id)).findFirst();
     }
 
-    // ===== ÍTEMS =====
-    // CORRECCIÓN: Se usa Menu.MenuItem
     public List<Menu.MenuItem> findAllItems() { 
         return new ArrayList<>(items);
     }
 
-    // CORRECCIÓN: Se usa Menu.MenuItem
     public List<Menu.MenuItem> findItemsByCategory(Long categoryId) { 
         if (categoryId == null) return findAllItems();
         return items.stream()
@@ -64,7 +57,6 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    // CORRECCIÓN: Se usa Menu.MenuItem en el tipo de retorno y la inicialización
     public Menu.MenuItem addItem(String nombre, BigDecimal precio, String descripcion, Menu categoria, boolean disponible) {
         Menu.MenuItem item = new Menu.MenuItem(itemSeq.incrementAndGet(), nombre, precio, descripcion, categoria, disponible);
         items.add(item);
@@ -75,7 +67,6 @@ public class MenuService {
         return items.removeIf(i -> Objects.equals(i.getId(), id));
     }
 
-    // CORRECCIÓN: Se usa Menu.MenuItem
     public Optional<Menu.MenuItem> findItem(Long id) { 
         return items.stream().filter(i -> Objects.equals(i.getId(), id)).findFirst();
     }
