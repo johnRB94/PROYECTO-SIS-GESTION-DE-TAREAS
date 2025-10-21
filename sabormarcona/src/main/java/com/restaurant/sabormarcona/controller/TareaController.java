@@ -1,14 +1,14 @@
 package com.restaurant.sabormarcona.controller;
 
 import com.restaurant.sabormarcona.model.Tarea;
+import com.restaurant.sabormarcona.model.Usuario; // Asegúrate de importar Usuario
 import com.restaurant.sabormarcona.service.TareaService;
-import com.restaurant.sabormarcona.service.PrincipalService;
+import com.restaurant.sabormarcona.service.UsuarioService; // Cambiamos PrincipalService por UsuarioService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDateTime;
 
 @Controller
@@ -19,12 +19,12 @@ public class TareaController {
     private TareaService tareaService;
     
     @Autowired
-    private PrincipalService trabajadorService;
+    private UsuarioService usuarioService; // Inyectamos el servicio de usuarios
     
     @GetMapping
     public String listarTareas(Model model) {
         model.addAttribute("tareas", tareaService.obtenerTodasLasTareas());
-        model.addAttribute("trabajadores", trabajadorService.obtenerTodosTrabajadores());
+        model.addAttribute("trabajadores", usuarioService.obtenerTodos()); // Obtenemos todos los usuarios
         model.addAttribute("totalTareas", tareaService.obtenerTodasLasTareas().size());
         model.addAttribute("tareasPendientes", tareaService.contarTareasPendientes());
         return "vista/tarea"; 
@@ -33,8 +33,16 @@ public class TareaController {
     @PostMapping("/agregar")
     public String agregarTarea(@ModelAttribute Tarea tarea,
                               @RequestParam("fechaLimiteStr") String fechaLimiteStr,
+                              @RequestParam("trabajadorId") Long trabajadorId, // Recibimos el ID del trabajador
                               RedirectAttributes redirectAttributes) {
         try {
+            // Buscamos el usuario (trabajador) en la base de datos
+            Usuario trabajador = usuarioService.findById(trabajadorId)
+            .orElseThrow(() -> new IllegalArgumentException("Trabajador no válido Id:" + trabajadorId));
+
+            // Asignamos el objeto Usuario completo a la tarea
+            tarea.setTrabajadorAsignado(trabajador);
+
             LocalDateTime fechaLimite = LocalDateTime.parse(fechaLimiteStr);
             tarea.setFechaLimite(fechaLimite);
 
@@ -70,8 +78,14 @@ public class TareaController {
     @PostMapping("/actualizar")
     public String actualizarTarea(@ModelAttribute Tarea tarea,
                                 @RequestParam("fechaLimiteStr") String fechaLimiteStr,
+                                @RequestParam("trabajadorId") Long trabajadorId, // También recibimos el ID al actualizar
                                 RedirectAttributes redirectAttributes) {
         try {
+            // Buscamos y asignamos el trabajador
+            Usuario trabajador = usuarioService.findById(trabajadorId)
+    .orElseThrow(() -> new IllegalArgumentException("Trabajador no válido Id:" + trabajadorId));
+            tarea.setTrabajadorAsignado(trabajador);
+
             LocalDateTime fechaLimite = LocalDateTime.parse(fechaLimiteStr);
             tarea.setFechaLimite(fechaLimite);
             

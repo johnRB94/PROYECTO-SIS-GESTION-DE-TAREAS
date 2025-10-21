@@ -5,12 +5,12 @@
 <div th:replace="~{componentes/navbar.html}"></div>
     <div class="container d-flex justify-content-center align-items-center my-5 flex-grow-1">
         <div class="row justify-content-center w-100">
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <div class="card shadow-lg">
                     <div class="card-header bg-success text-white text-center">
                         <h3>Registro de Nuevo Empleado</h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                     
                         <div th:if="${registroExitoso}" class="alert alert-success alert-dismissible fade show" role="alert">
                             <span th:text="${mensajeExito}"></span>
@@ -23,39 +23,40 @@
 
                         <form th:action="@{/nuevo}" th:object="${usuario}" method="post">
                             
-                            <div class="mb-4 text-center">
-                                <h5 class="mb-2 text-primary">Rol Asignado:</h5>
-                                <div class="badge bg-primary text-white p-2">
-                                    <i class="fas fa-user-tie"></i> EMPLEADO
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre Completo</label>
+                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej: Juan Pérez" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="rol" class="form-label">Rol del Empleado</label>
+                                <select class="form-select" id="rol" th:field="*{rol}" required>
+                                    <option value="" disabled selected>-- Seleccione un rol --</option>
+                                    <option value="Mesero">Mesero</option>
+                                    <option value="Mesera">Mesera</option>
+                                    <option value="Cocinero">Cocinero</option>
+                                    <option value="Chef Principal">Chef Principal</option>
+                                    <option value="Bartender">Bartender</option>
+                                    <option value="ADMIN">Administrador</option>
+                                </select>
+                            </div>
+                            
+                            <hr class="my-4">
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">Nombre de Usuario (para login)</label>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Ej: jperez" required>
                                 </div>
-                                <small class="text-muted d-block mt-2">Los empleados registrados desde aquí tendrán el rol "EMPLEADO".</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Nombre de Usuario</label>
-                                <input type="text" class="form-control" 
-                                       id="username" 
-                                       th:field="*{username}" 
-                                       placeholder="Ej: nuevo.empleado"
-                                       required>
-                                <small class="form-text text-muted">Mínimo 4 caracteres.</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" 
-                                       id="password" 
-                                       th:field="*{password}" 
-                                       required>
-                                <small class="form-text text-muted">Mínimo 6 caracteres.</small>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                </div>
                             </div>
 
                             <div class="mb-4">
                                 <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" class="form-control" 
-                                       id="confirmarContrasena" 
-                                       name="confirmarContrasena"
-                                       required>
+                                <input type="password" class="form-control" id="confirmarContrasena" name="confirmarContrasena" required>
                             </div>
 
                             <div class="d-grid gap-2">
