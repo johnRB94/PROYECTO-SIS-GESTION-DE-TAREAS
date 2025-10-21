@@ -31,25 +31,10 @@ public class NuevoController {
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 6290cdcdf066f1d43d5eac0fe16d435238450229
-        // Validaciones mejoradas
         if (usuario.getNombre() == null || usuario.getNombre().trim().isEmpty() ||
             usuario.getRol() == null || usuario.getRol().trim().isEmpty() ||
             usuario.getUsername() == null || usuario.getUsername().trim().isEmpty() || 
             usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
-<<<<<<< HEAD
-=======
-=======
-       if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty() || 
-            usuario.getPassword() == null || usuario.getPassword().trim().isEmpty() || 
-            confirmarContrasena == null || confirmarContrasena.trim().isEmpty() ||
-            !usuario.getPassword().equals(confirmarContrasena) ||
-            usuarioService.existeUsuario(usuario.getUsername())) {
->>>>>>> 7b7abd34a689173cbdf0d53c7baf558f1903d74e
->>>>>>> 6290cdcdf066f1d43d5eac0fe16d435238450229
             
             model.addAttribute("error", "Todos los campos son obligatorios.");
             return "vista/nuevo";
@@ -65,9 +50,7 @@ public class NuevoController {
              return "vista/nuevo";
         }
 
-        // Ya no seteamos rol ni nombre, vienen del formulario
         usuarioService.agregarUsuario(usuario);
-
         redirectAttributes.addFlashAttribute("registroExitoso", true);
         redirectAttributes.addFlashAttribute("mensajeExito", "¡Empleado '" + usuario.getNombre() + "' registrado con éxito!");
         

@@ -1,16 +1,7 @@
 package com.restaurant.sabormarcona.model;
 
 import java.time.LocalDateTime;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -27,65 +18,22 @@ public class Tarea {
     private String titulo;
 
     private String descripcion;
-    
-    // --- CAMPOS ANTIGUOS ELIMINADOS ---
-    // private String trabajador; (Reemplazado por la relación)
-    // private String rol; (Reemplazado por la relación)
-
     private String prioridad;
 
     @NotNull(message = "La fecha límite es obligatoria.")
     @Future(message = "La fecha límite debe ser en el futuro.")
     private LocalDateTime fechaLimite;
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 6290cdcdf066f1d43d5eac0fe16d435238450229
     @Enumerated(EnumType.STRING)
     private TaskStatus estado;
 
-    // --- NUEVA RELACIÓN CON USUARIO ---
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY: Carga el usuario solo cuando se necesita
-    @JoinColumn(name = "usuario_id") // La columna en la tabla 'tareas' que guardará el ID del usuario
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
     private Usuario trabajadorAsignado;
 
-
-    // Constructores, Getters y Setters
     public Tarea() {}
-<<<<<<< HEAD
-=======
-=======
-    public Tarea() {
-    }
-
-    public Tarea(Long id, String titulo, String descripcion, String trabajador,
-                 String rol, String prioridad, LocalDateTime fechaLimite, String estado) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.trabajador = trabajador;
-        this.rol = rol;
-        this.prioridad = prioridad;
-        this.fechaLimite = fechaLimite;
-        this.estado = estado;
-    }
-
-    public Tarea(String titulo, String descripcion, String trabajador,
-                 String rol, String prioridad, LocalDateTime fechaLimite) {
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.trabajador = trabajador;
-        this.rol = rol;
-        this.prioridad = prioridad;
-        this.fechaLimite = fechaLimite;
-        this.estado = "Pendiente"; 
-    }
 
     // Getters y Setters
->>>>>>> 7b7abd34a689173cbdf0d53c7baf558f1903d74e
->>>>>>> 6290cdcdf066f1d43d5eac0fe16d435238450229
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitulo() { return titulo; }
