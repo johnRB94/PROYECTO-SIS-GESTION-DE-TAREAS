@@ -38,6 +38,7 @@ public class Tarea {
     @Future(message = "La fecha límite debe ser en el futuro.")
     private LocalDateTime fechaLimite;
 
+<<<<<<< HEAD
     @Enumerated(EnumType.STRING)
     private TaskStatus estado;
 
@@ -49,6 +50,35 @@ public class Tarea {
 
     // Constructores, Getters y Setters
     public Tarea() {}
+=======
+    public Tarea() {
+    }
+
+    public Tarea(Long id, String titulo, String descripcion, String trabajador,
+                 String rol, String prioridad, LocalDateTime fechaLimite, String estado) {
+        this.id = id;
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.trabajador = trabajador;
+        this.rol = rol;
+        this.prioridad = prioridad;
+        this.fechaLimite = fechaLimite;
+        this.estado = estado;
+    }
+
+    public Tarea(String titulo, String descripcion, String trabajador,
+                 String rol, String prioridad, LocalDateTime fechaLimite) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.trabajador = trabajador;
+        this.rol = rol;
+        this.prioridad = prioridad;
+        this.fechaLimite = fechaLimite;
+        this.estado = "Pendiente"; 
+    }
+
+    // Getters y Setters
+>>>>>>> 7b7abd34a689173cbdf0d53c7baf558f1903d74e
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

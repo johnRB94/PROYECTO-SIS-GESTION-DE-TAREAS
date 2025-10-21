@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const taskForm = document.getElementById('taskForm');
     
+<<<<<<< HEAD
+=======
+    // Mostrar notificación (Toast)
+>>>>>>> 7b7abd34a689173cbdf0d53c7baf558f1903d74e
     function showToast(title, message, type = 'success') {
         // Tu función de Toast sigue igual...
         const toastEl = document.getElementById('notificationToast');
@@ -152,5 +156,49 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('editPrioridad').value = priority;
     };
 
+<<<<<<< HEAD
     window.clearForm = clearForm;
 });
+=======
+        // Estado: Seleccionar la opción correcta
+        document.getElementById('editEstado').value = tarea.estado;
+
+        // Trabajador: Llenar campos ocultos y la info visible (no se puede cambiar el trabajador al editar)
+        document.getElementById('editTrabajador').value = tarea.trabajador;
+        document.getElementById('editRol').value = tarea.rol;
+        document.getElementById('editWorkerInfo').textContent = `${tarea.trabajador} (${tarea.rol})`;
+        
+        // 3. Mostrar el modal
+        const editModal = new bootstrap.Modal(document.getElementById('modalEditarTarea'));
+        editModal.show();
+
+    } catch (error) {
+        console.error('Error al editar tarea:', error);
+        window.showToast('Error', 'No se pudo cargar la tarea para edición.', 'danger');
+    }
+};
+
+
+const editTaskForm = document.getElementById('editTaskForm');
+if (editTaskForm) {
+    editTaskForm.addEventListener('submit', function(e) {
+        window.showToast('Enviando...', `Actualizando tarea...`, 'info');
+    });
+}
+
+    // --- INICIALIZACIÓN ---
+    console.log('Tarea.js cargado correctamente para Spring Boot + Thymeleaf');
+    
+    // Mostrar mensaje de bienvenida
+    setTimeout(() => {
+        showToast('Sistema de Tareas', 'Selecciona un trabajador para comenzar', 'info');
+    }, 1000);
+
+    // Nueva función para manejar datos desde atributos data-*
+window.selectWorkerFromData = function(element) {
+    const name = element.getAttribute('data-nombre');
+    const role = element.getAttribute('data-rol');
+    window.selectWorker(element, name, role);
+};
+});
+>>>>>>> 7b7abd34a689173cbdf0d53c7baf558f1903d74e

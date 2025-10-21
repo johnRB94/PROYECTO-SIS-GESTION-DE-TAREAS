@@ -31,11 +31,19 @@ public class NuevoController {
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
 
+<<<<<<< HEAD
         // Validaciones mejoradas
         if (usuario.getNombre() == null || usuario.getNombre().trim().isEmpty() ||
             usuario.getRol() == null || usuario.getRol().trim().isEmpty() ||
             usuario.getUsername() == null || usuario.getUsername().trim().isEmpty() || 
             usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
+=======
+       if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty() || 
+            usuario.getPassword() == null || usuario.getPassword().trim().isEmpty() || 
+            confirmarContrasena == null || confirmarContrasena.trim().isEmpty() ||
+            !usuario.getPassword().equals(confirmarContrasena) ||
+            usuarioService.existeUsuario(usuario.getUsername())) {
+>>>>>>> 7b7abd34a689173cbdf0d53c7baf558f1903d74e
             
             model.addAttribute("error", "Todos los campos son obligatorios.");
             return "vista/nuevo";
