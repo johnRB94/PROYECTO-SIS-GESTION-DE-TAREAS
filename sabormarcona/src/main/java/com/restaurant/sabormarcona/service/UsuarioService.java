@@ -24,7 +24,6 @@ public class UsuarioService {
     public boolean existeUsuario(String username) {
         return usuarioRepository.existsByUsername(username);
     }
-
     public Optional<Usuario> autenticar(String username, String password) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
         if (usuarioOpt.isPresent()) {
