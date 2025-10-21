@@ -31,10 +31,6 @@ public class IncidenciaController {
     @PostMapping("/registrar")
     public String registrarIncidencia(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
         try {
-            if (incidencia.getTitulo() == null || incidencia.getTitulo().isEmpty()) {
-                 throw new IllegalArgumentException("El título de la incidencia es obligatorio.");
-            }
-            
             incidenciaService.guardarNuevaIncidencia(incidencia);
             redirectAttributes.addFlashAttribute("mensaje", "Incidencia registrada exitosamente.");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");
@@ -49,14 +45,8 @@ public class IncidenciaController {
     public String actualizarIncidencia(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
         try {
             Incidencia incidenciaActualizada = incidenciaService.modificarIncidencia(incidencia);
-
-            if (incidenciaActualizada != null) {
-                redirectAttributes.addFlashAttribute("mensaje", "Incidencia actualizada exitosamente.");
-                redirectAttributes.addFlashAttribute("tipoMensaje", "success");
-            } else {
-                 redirectAttributes.addFlashAttribute("mensaje", "Error: No se encontró la incidencia para actualizar.");
-                redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
-            }
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia actualizada exitosamente.");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensaje", "Error al actualizar la incidencia: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
