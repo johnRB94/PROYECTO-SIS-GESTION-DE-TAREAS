@@ -51,7 +51,7 @@
                 </td>
                 
                 <td th:text="${#temporals.format(incidencia.fechaLimite, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${incidencia.trabajador} + ' (' + ${incidencia.rol} + ')'"></td>
+                <td th:text="${incidencia.trabajador != null ? incidencia.trabajador.nombre + ' (' + incidencia.trabajador.rol + ')' : 'No asignado'}"></td>
                 
                 <td>
                     <a href="#" class="text-warning mx-1"

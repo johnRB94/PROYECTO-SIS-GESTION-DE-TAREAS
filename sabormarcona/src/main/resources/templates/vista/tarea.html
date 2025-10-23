@@ -13,7 +13,6 @@
         </div>
         
         <div class="row g-4">
-            <!-- Seleccionar Trabajador -->
             <div class="col-lg-5">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-white py-3">
@@ -24,6 +23,7 @@
                            
                             <div th:each="trabajador : ${trabajadores}"
                                  class="list-group-item list-group-item-action worker-card"
+                                 th:data-id="${trabajador.id}"
                                  th:data-nombre="${trabajador.nombre}"
                                  th:data-rol="${trabajador.rol}"
                                  onclick="selectWorkerFromData(this)">
@@ -37,7 +37,6 @@
                                 </div>
                             </div>
                            
-                            <!-- Si no hay trabajadores -->
                             <div th:if="${#lists.isEmpty(trabajadores)}" class="text-center py-4 text-muted">
                                 <i class="fas fa-users fa-3x mb-3"></i>
                                 <p>No hay trabajadores registrados</p>
@@ -47,7 +46,6 @@
                 </div>
             </div>
 
-            <!-- Asignar Nueva Tarea -->
             <div class="col-lg-7">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-white py-3">
@@ -58,7 +56,6 @@
                             <p class="mb-0">Asignando tarea a: <strong id="selectedWorkerInfo"></strong></p>
                         </div>
                        
-                        <!-- Formulario de tarea -->
                         <form th:action="@{/tareas/agregar}" method="post" id="taskForm">
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Título de la Tarea</label>
@@ -86,9 +83,7 @@
                                 </div>
                             </div>
                            
-                            <!-- Campos ocultos para trabajador -->
-                            <input type="hidden" id="trabajador" name="trabajador">
-                            <input type="hidden" id="rol" name="rol">
+                            <input type="hidden" id="trabajadorId" name="trabajadorId">
                            
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                                 <button type="button" class="btn btn-secondary" onclick="clearForm()">
@@ -104,7 +99,6 @@
             </div>
         </div>
 
-        <!-- Tabla de Tareas Asignadas -->
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -129,13 +123,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Tareas dinámicas -->
                                     <tr th:each="tarea : ${tareas}">
                                         <td>
                                             <p class="fw-bold mb-1" th:text="${tarea.titulo}"></p>
                                             <p class="text-muted mb-0 small" th:text="${tarea.descripcion}"></p>
                                         </td>
-                                        <td th:text="${tarea.trabajador}"></td>
+                                        <td th:text="${tarea.trabajadorAsignado != null ? tarea.trabajadorAsignado.nombre : 'No asignado'}"></td>
                                         <td>
                                             <span class="badge rounded-pill text-white"
                                                   th:classappend="${tarea.prioridad} == 'Alta' ? 'bg-danger' : (${tarea.prioridad} == 'Media' ? 'bg-warning' : 'bg-success')"
@@ -147,14 +140,11 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <!-- Botón Modificar -->
-                                                    <button type="button" class="btn btn-outline-warning btn-sm"
+                                                <button type="button" class="btn btn-outline-warning btn-sm"
                                                         th:onclick="|editarTarea(${tarea.id})|"
                                                         title="Modificar tarea">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                
-                                                <!-- Botón Eliminar -->
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
                                                 <form th:action="@{'/tareas/eliminar/' + ${tarea.id}}" method="post" class="d-inline">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm"
                                                             onclick="return confirm('¿Estás seguro de eliminar esta tarea?')"
@@ -165,8 +155,6 @@
                                             </div>
                                         </td>
                                     </tr>
-                                   
-                                    <!-- Si no hay tareas -->
                                     <tr th:if="${#lists.isEmpty(tareas)}">
                                         <td colspan="6" class="text-center py-4 text-muted">
                                             <i class="fas fa-tasks fa-3x mb-3"></i>
@@ -182,16 +170,6 @@
         </div>
     </main>
 
-    <div class="toast-pos">
-        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto" id="toastTitle">Notificación</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage"></div>
-        </div>
-    </div>
-    <!-- Modal-->
     <div class="modal fade" id="modalEditarTarea" tabindex="-1" aria-labelledby="modalEditarTareaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -203,16 +181,16 @@
                 <div class="modal-body">
                     <input type="hidden" id="editId" name="id">
 
+                    <input type="hidden" id="editTrabajadorId" name="trabajadorId">
+
                     <div class="mb-3">
                         <label for="editTitulo" class="form-label">Título de la Tarea</label>
                         <input type="text" class="form-control" id="editTitulo" name="titulo" required>
                     </div>
-
                     <div class="mb-3">
                         <label for="editDescripcion" class="form-label">Descripción (Opcional)</label>
                         <textarea class="form-control" id="editDescripcion" name="descripcion" rows="2"></textarea>
                     </div>
-
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="editFechaLimiteStr" class="form-label">Fecha Límite</label>
@@ -228,19 +206,14 @@
                             <input type="hidden" id="editPrioridad" name="prioridad" required>
                         </div>
                     </div>
-                    
                     <div class="mb-3">
                         <label for="editEstado" class="form-label">Estado</label>
                         <select class="form-select" id="editEstado" name="estado" required>
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Progreso">En Progreso</option>
-                            <option value="Completada">Completada</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="EN_PROGRESO">En Progreso</option>
+                            <option value="COMPLETADA">Completada</option>
                         </select>
                     </div>
-
-                    <input type="hidden" id="editTrabajador" name="trabajador">
-                    <input type="hidden" id="editRol" name="rol">
-
                     <div class="alert alert-info mt-3">
                         <p class="mb-0">Asignado a: <strong id="editWorkerInfo"></strong></p>
                     </div>
