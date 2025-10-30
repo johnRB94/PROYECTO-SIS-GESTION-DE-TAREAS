@@ -1,195 +1,399 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{componentes/head.html}"></head>
+
 <body>
-<div th:replace="~{componentes/navbar.html}"></div>
-<div class="container mt-5">
-    <h1 class="mb-4">Registro de Incidencias</h1>
-    <div th:if="${mensaje}" class="alert alert-dismissible fade show" 
-         th:classappend="${tipoMensaje == 'success' ? 'alert-success' : 'alert-danger'}" role="alert">
-        <span th:text="${mensaje}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div th:replace="~{componentes/navbar.html}"></div>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">
+            <i class="fas fa-exclamation-circle me-2 text-danger"></i>Registro de Incidencias
+        </h1>
+
+        <div th:if="${mensaje}"
+            th:class="'alert alert-dismissible fade show ' + (${tipoMensaje} == 'success' ? 'alert-success' : 'alert-danger')"
+            role="alert">
+            <i th:class="'fas me-2 ' + (${tipoMensaje} == 'success' ? 'fa-check-circle' : 'fa-exclamation-circle')"></i>
+            <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+            data-bs-target="#modalRegistroIncidencia">
+            <i class="fas fa-plus me-1"></i> Registrar Nueva Incidencia
+        </button>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Fecha Límite</th>
+                        <th>Asignado a</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="incidencia : ${incidencias}">
+                        <td th:text="${incidencia.id}"></td>
+                        <td>
+                            <span class="fw-bold" th:text="${incidencia.titulo}"></span>
+                        </td>
+                        <td th:text="${#strings.abbreviate(incidencia.descripcion, 50)}"></td>
+
+                        <td>
+                            <span class="badge rounded-pill text-white" th:classappend="${incidencia.prioridad == 'Alta' ? 'bg-danger' : 
+                                                (incidencia.prioridad == 'Media' ? 'bg-warning text-dark' : 
+                                                'bg-success')}" th:text="${incidencia.prioridad}">
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge rounded-pill text-white" th:classappend="${incidencia.estado == 'Pendiente' ? 'bg-danger' : 
+                                                (incidencia.estado == 'En Progreso' ? 'bg-warning text-dark' : 
+                                                'bg-success')}" th:text="${incidencia.estado}">
+                            </span>
+                        </td>
+
+                        <td th:text="${#temporals.format(incidencia.fechaLimite, 'dd-MM-yyyy HH:mm')}"></td>
+
+                        <td>
+                            <span th:if="${incidencia.trabajador != null}"
+                                th:text="${incidencia.trabajador.nombre + ' (' + incidencia.trabajador.rol + ')'}"></span>
+                            <span th:if="${incidencia.trabajador == null}" class="badge bg-secondary">No asignado</span>
+                        </td>
+
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarIncidencia"
+                                    th:onclick="'cargarIncidenciaParaEditar(' + ${incidencia.id} + ')'"
+                                    title="Editar Incidencia">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <form th:action="@{/incidencias/{id}/eliminar(id=${incidencia.id})}" method="post"
+                                    class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('¿Estás seguro de eliminar esta incidencia?')"
+                                        title="Eliminar Incidencia">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(incidencias)}">
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No hay incidencias registradas</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalRegistroIncidencia">
-        <i class="fas fa-plus me-1"></i> Registrar Nueva Incidencia
-    </button>
-    <!-- tabla de incidencias-->
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Descripción</th> 
-                <th>Prioridad</th>
-                <th>Estado</th>
-                <th>Fecha Límite</th>
-                <th>Asignado a</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="incidencia : ${incidencias}">
-                <td th:text="${incidencia.id}"></td>
-                <td th:text="${incidencia.titulo}"></td>
-                <td th:text="${incidencia.descripcion}"></td> <td>
-                    <span class="badge" 
-                        th:classappend="${incidencia.prioridad == 'Alta' ? 'bg-danger' : 
-                                        incidencia.prioridad == 'Media' ? 'bg-warning text-dark' : 
-                                        incidencia.prioridad == 'Baja' ? 'bg-success' : 'bg-secondary'}"
-                        th:text="${incidencia.prioridad}">
-                    </span>
-                </td>
-                
-                <td>
-                    <span class="badge" 
-                        th:classappend="${incidencia.estado == 'Pendiente' ? 'bg-info' : 
-                                        incidencia.estado == 'En Progreso' ? 'bg-primary' : 
-                                        incidencia.estado == 'Resuelta' ? 'bg-success' : 'bg-secondary'}"
-                        th:text="${incidencia.estado}">
-                    </span>
-                </td>
-                
-                <td th:text="${#temporals.format(incidencia.fechaLimite, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${incidencia.trabajador != null ? incidencia.trabajador.nombre + ' (' + incidencia.trabajador.rol + ')' : 'No asignado'}"></td>
-                
-                <td>
-                    <a href="#" class="text-warning mx-1"
-                    th:onclick="|editarIncidencia(${incidencia.id})|" title="Editar Incidencia">
-                        <i class="fas fa-edit"></i>
-                    </a>
+    <!-- MODAL: REGISTRAR NUEVA INCIDENCIA -->
+    <div class="modal fade" id="modalRegistroIncidencia" tabindex="-1" aria-labelledby="modalRegistroIncidenciaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="modalRegistroIncidenciaLabel">
+                        <i class="fas fa-plus me-2"></i>Registrar Nueva Incidencia
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
 
-                    <form th:action="@{/incidencias/eliminar/{id}(id=${incidencia.id})}" method="post" 
-                        style="display: inline;" 
-                        onsubmit="return confirm('¿Confirma que desea eliminar la incidencia: ' + this.closest('tr').children[1].innerText + '?');">
-                        <button type="submit" class="btn btn-link text-danger mx-1 p-0 border-0" title="Eliminar Incidencia">
-                            <i class="fas fa-trash"></i>
+                <form th:action="@{/incidencias}" method="post" id="crearIncidenciaForm">
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label for="regTitulo" class="form-label fw-bold">Título de la Incidencia *</label>
+                            <input type="text" class="form-control" id="regTitulo" name="titulo"
+                                placeholder="Ej: Error en sistema de inventario" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="regDescripcion" class="form-label fw-bold">Descripción</label>
+                            <textarea class="form-control" id="regDescripcion" name="descripcion" rows="3"
+                                placeholder="Describe el problema detalladamente..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="regFechaLimite" class="form-label fw-bold">Fecha Límite *</label>
+                                <input type="datetime-local" class="form-control" id="regFechaLimite" name="fechaLimite"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="regPrioridad" class="form-label fw-bold">Prioridad *</label>
+                                <select class="form-select" id="regPrioridad" name="prioridad" required>
+                                    <option value="">Seleccionar</option>
+                                    <option value="Baja">Baja</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Alta">Alta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="regEstado" class="form-label fw-bold">Estado Inicial *</label>
+                            <select class="form-select" id="regEstado" name="estado" required>
+                                <option value="">Seleccionar</option>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Progreso">En Progreso</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
                         </button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${incidencias.empty}">
-                <td colspan="8" class="text-center">No hay incidencias registradas.</td> 
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- Modal Registro de Incidencias-->
-<div class="modal fade" id="modalRegistroIncidencia" tabindex="-1" aria-labelledby="modalRegistroIncidenciaLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="modalRegistroIncidenciaLabel"><i class="fas fa-plus me-2"></i>Registrar Nueva Incidencia</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form th:action="@{/incidencias/registrar}" method="post">
-        <div class="modal-body">
-            
-            <div class="mb-3">
-                <label for="regTitulo" class="form-label">Título de la Incidencia</label>
-                <input type="text" class="form-control" id="regTitulo" name="titulo" required>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus me-1"></i>Crear Incidencia
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <div class="mb-3">
-                <label for="regDescripcion" class="form-label">Descripción</label>
-                <textarea class="form-control" id="regDescripcion" name="descripcion" rows="3"></textarea>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="regFechaLimite" class="form-label">Fecha Límite</label>
-                    <input type="datetime-local" class="form-control" id="regFechaLimite" name="fechaLimite" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="regPrioridad" class="form-label">Prioridad</label>
-                    <select class="form-select" id="regPrioridad" name="prioridad" required>
-                        <option value="Baja">Baja</option>
-                        <option value="Media">Media</option>
-                        <option value="Alta">Alta</option>
-                    </select>
-                </div>
-            </div>
-            
-             <div class="mb-3">
-                <label for="regEstado" class="form-label">Estado Inicial</label>
-                <select class="form-select" id="regEstado" name="estado" required>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En Progreso">En Progreso</option>
-                </select>
-            </div>
-            
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-success"><i class="fas fa-plus me-1"></i>Crear Incidencia</button>
-        </div>
-      </form>
     </div>
-  </div>
-</div>
 
-<!-- Modal Editar Incidencias-->
-<div class="modal fade" id="modalEditarIncidencia" tabindex="-1" aria-labelledby="modalEditarIncidenciaLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-warning text-white">
-        <h5 class="modal-title" id="modalEditarIncidenciaLabel"><i class="fas fa-edit me-2"></i>Editar Incidencia</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form th:action="@{/incidencias/actualizar}" method="post" id="editIncidenciaForm">
-        <div class="modal-body">
-            <input type="hidden" id="editId" name="id">
-
-            <div class="mb-3">
-                <label for="editTitulo" class="form-label">Título</label>
-                <input type="text" class="form-control" id="editTitulo" name="titulo" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="editDescripcion" class="form-label">Descripción</label>
-                <textarea class="form-control" id="editDescripcion" name="descripcion" rows="2"></textarea>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="editFechaLimite" class="form-label">Fecha Límite</label>
-                    <input type="datetime-local" class="form-control" id="editFechaLimite" name="fechaLimite" required>
+    <!-- MODAL: EDITAR INCIDENCIA -->
+    <div class="modal fade" id="modalEditarIncidencia" tabindex="-1" aria-labelledby="modalEditarIncidenciaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="modalEditarIncidenciaLabel">
+                        <i class="fas fa-edit me-2"></i>Editar Incidencia
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="editPrioridad" class="form-label">Prioridad</label>
-                    <select class="form-select" id="editPrioridad" name="prioridad" required>
-                        <option value="Baja">Baja</option>
-                        <option value="Media">Media</option>
-                        <option value="Alta">Alta</option>
-                    </select>
-                </div> 
-            </div>
-            
-             <div class="mb-3">
-                <label for="editEstado" class="form-label">Estado</label>
-                <select class="form-select" id="editEstado" name="estado" required>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En Progreso">En Progreso</option>
-                    <option value="Resuelta">Resuelta</option>
-                </select>
-            </div>
-            
-            <input type="hidden" id="editTrabajador" name="trabajador">
-            <input type="hidden" id="editRol" name="rol">
-            
-            <p class="mt-3 alert alert-secondary p-2">Asignado a: <strong id="editWorkerInfo"></strong></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-warning"><i class="fas fa-save me-1"></i>Guardar Cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
-<script th:src="@{/js/incidencia.js}"></script>
+                <form id="editIncidenciaForm" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="editId" name="id">
+
+                        <div class="mb-3">
+                            <label for="editTitulo" class="form-label fw-bold">Título *</label>
+                            <input type="text" class="form-control" id="editTitulo" name="titulo" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editDescripcion" class="form-label fw-bold">Descripción</label>
+                            <textarea class="form-control" id="editDescripcion" name="descripcion" rows="3"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editFechaLimite" class="form-label fw-bold">Fecha Límite *</label>
+                                <input type="datetime-local" class="form-control" id="editFechaLimite"
+                                    name="fechaLimite" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPrioridad" class="form-label fw-bold">Prioridad *</label>
+                                <select class="form-select" id="editPrioridad" name="prioridad" required>
+                                    <option value="">Seleccionar</option>
+                                    <option value="Baja">Baja</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Alta">Alta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editEstado" class="form-label fw-bold">Estado *</label>
+                            <select class="form-select" id="editEstado" name="estado" required>
+                                <option value="">Seleccionar</option>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Progreso">En Progreso</option>
+                                <option value="Resuelta">Resuelta</option>
+                            </select>
+                        </div>
+
+                        <div class="alert alert-secondary p-2 mt-3">
+                            <p class="mb-0">Asignado a: <strong id="editWorkerInfo">-</strong></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function cargarIncidenciaParaEditar(incidenciaId) {
+            const form = document.getElementById('editIncidenciaForm');
+            form.action = '/incidencias/' + incidenciaId + '/editar';
+
+            const tabla = document.querySelector('table tbody');
+            const filas = tabla.querySelectorAll('tr');
+
+            let datosIncidencia = null;
+
+            filas.forEach(fila => {
+                const idCell = fila.querySelector('td:first-child');
+                if (idCell && parseInt(idCell.textContent) === incidenciaId) {
+                    datosIncidencia = {
+                        id: idCell.textContent,
+                        titulo: fila.children[1].textContent,
+                        descripcion: fila.children[2].textContent,
+                        prioridad: fila.children[3].textContent.trim(),
+                        estado: fila.children[4].textContent.trim(),
+                        fechaLimite: fila.children[5].textContent,
+                        trabajador: fila.children[6].textContent
+                    };
+                }
+            });
+
+            if (datosIncidencia) {
+                document.getElementById('editId').value = datosIncidencia.id;
+                document.getElementById('editTitulo').value = datosIncidencia.titulo;
+                document.getElementById('editDescripcion').value = datosIncidencia.descripcion;
+
+                const prioridad = datosIncidencia.prioridad.replace(/[^\w\s]/g, '').trim();
+                document.getElementById('editPrioridad').value = prioridad || '';
+
+                const estado = datosIncidencia.estado.replace(/[^\w\s]/g, '').trim();
+                document.getElementById('editEstado').value = estado || '';
+
+                if (datosIncidencia.fechaLimite) {
+                    const fechaFormato = convertirFechaAInputFormat(datosIncidencia.fechaLimite);
+                    document.getElementById('editFechaLimite').value = fechaFormato;
+                }
+
+                document.getElementById('editWorkerInfo').textContent = datosIncidencia.trabajador || 'No asignado';
+
+                console.log('Incidencia cargada:', datosIncidencia);
+            } else {
+                console.warn('No se encontraron los datos de la incidencia');
+                alert('Error al cargar los datos de la incidencia');
+            }
+        }
+
+        function convertirFechaAInputFormat(fechaStr) {
+            if (!fechaStr) return '';
+
+            const partes = fechaStr.split(' ');
+            if (partes.length !== 2) return '';
+
+            const fecha = partes[0].split('-');
+            const hora = partes[1];
+
+            if (fecha.length !== 3) return '';
+
+            const dia = fecha[0];
+            const mes = fecha[1];
+            const año = fecha[2];
+
+            return `${año}-${mes}-${dia}T${hora}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalCrear = document.getElementById('modalRegistroIncidencia');
+            if (modalCrear) {
+                modalCrear.addEventListener('hidden.bs.modal', function () {
+                    document.getElementById('crearIncidenciaForm').reset();
+                });
+            }
+
+            const modalEditar = document.getElementById('modalEditarIncidencia');
+            if (modalEditar) {
+                modalEditar.addEventListener('hidden.bs.modal', function () {
+                    document.getElementById('editIncidenciaForm').reset();
+                    document.getElementById('editWorkerInfo').textContent = '-';
+                });
+            }
+
+            const formCrear = document.getElementById('crearIncidenciaForm');
+            if (formCrear) {
+                formCrear.addEventListener('submit', function (e) {
+                    const titulo = document.getElementById('regTitulo').value.trim();
+                    const fechaLimite = document.getElementById('regFechaLimite').value;
+                    const prioridad = document.getElementById('regPrioridad').value;
+                    const estado = document.getElementById('regEstado').value;
+
+                    if (!titulo) {
+                        e.preventDefault();
+                        alert('Por favor ingresa un título');
+                        return false;
+                    }
+
+                    if (!fechaLimite) {
+                        e.preventDefault();
+                        alert('Por favor ingresa una fecha límite');
+                        return false;
+                    }
+
+                    if (!prioridad) {
+                        e.preventDefault();
+                        alert('Por favor selecciona una prioridad');
+                        return false;
+                    }
+
+                    if (!estado) {
+                        e.preventDefault();
+                        alert('Por favor selecciona un estado');
+                        return false;
+                    }
+                });
+            }
+
+            const formEditar = document.getElementById('editIncidenciaForm');
+            if (formEditar) {
+                formEditar.addEventListener('submit', function (e) {
+                    const titulo = document.getElementById('editTitulo').value.trim();
+                    const fechaLimite = document.getElementById('editFechaLimite').value;
+                    const prioridad = document.getElementById('editPrioridad').value;
+                    const estado = document.getElementById('editEstado').value;
+
+                    if (!titulo) {
+                        e.preventDefault();
+                        alert('Por favor ingresa un título');
+                        return false;
+                    }
+
+                    if (!fechaLimite) {
+                        e.preventDefault();
+                        alert('Por favor ingresa una fecha límite');
+                        return false;
+                    }
+
+                    if (!prioridad) {
+                        e.preventDefault();
+                        alert('Por favor selecciona una prioridad');
+                        return false;
+                    }
+
+                    if (!estado) {
+                        e.preventDefault();
+                        alert('Por favor selecciona un estado');
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
 </body>
+
 <div th:replace="~{componentes/footer.html}"></div>
+
 </html>

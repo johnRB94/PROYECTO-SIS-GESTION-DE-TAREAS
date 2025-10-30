@@ -1,44 +1,36 @@
 package com.restaurant.sabormarcona.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
+
+@Entity
+@Table(name = "insumos")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class Insumo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "El nombre no puede estar vacío.")
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
+
+    @Column(name = "tipo", length = 50)
     private String tipo;
-    private Integer stock;
+
+    @Min(value = 0, message = "El stock no puede ser negativo.")
+    @Column(name = "stock")
+    @Builder.Default
+    private Integer stock = 0;
+
+    @Column(name = "unidad", length = 20)
     private String unidad;
-
-    public Insumo() {}
-
-
-    public Insumo(Long id, String nombre, String tipo, Integer stock, String unidad) {
-        this.id = id;
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.stock = stock;
-        this.unidad = unidad;
-    }
-
-    // Constructor 
-    public Insumo(String nombre, String tipo, Integer stock, String unidad) {
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.stock = stock;
-        this.unidad = unidad;
-    }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
-    
-    public Integer getStock() { return stock; }
-    public void setStock(Integer stock) { this.stock = stock; }
-    
-    public String getUnidad() { return unidad; }
-    public void setUnidad(String unidad) { this.unidad = unidad; }
 }

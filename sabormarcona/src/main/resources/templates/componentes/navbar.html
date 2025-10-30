@@ -1,52 +1,51 @@
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white" th:href="@{/}">
-                <img th:src="@{/img/logo.png}" alt="Logo" width="80" height="80" 
-                     class="d-inline-block align-text-top rounded-circle">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" th:href="@{/principal}">
-                            <i class="fa-solid fa-house me-2"></i>Principal
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" th:href="@{/tareas}">
-                            <i class="fa-solid fa-list me-2"></i>Tareas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" th:href="@{/incidencias}">
-                            <i class="fa-solid fa-clipboard-list me-2"></i>Incidencias
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" th:href="@{/nuevo}">
-                            <i class="fa-solid fa-user-plus me-2"></i>Empleado Nuevo
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" th:href="@{/menu}">
-                            <i class="fa-solid fa-cogs me-2"></i>Gestión de Menú
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" th:href="@{/insumo}">
-                            <i class="fa-solid fa-boxes me-2"></i>Gestión de Insumos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/}" class="btn btn-outline-light">
-                            <i class="fa-solid fa-sign-out-alt me-2"></i> Cerrar sesión
-                        </a>
-                    </li>
-                </ul>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" th:href="@{/}">
+            <img th:src="@{/img/logo.png}" alt="Logo" width="80" height="80"
+                class="d-inline-block align-text-top rounded-circle">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/principal}">
+                        <i class="fa-solid fa-house me-2"></i>Principal
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/nuevo}">
+                        <i class="fa-solid fa-user-plus me-2"></i>Empleado Nuevo
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/tareas}">
+                        <i class="fa-solid fa-list me-2"></i>Tareas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/incidencias}">
+                        <i class="fa-solid fa-clipboard-list me-2"></i>Incidencias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/menu}">
+                        <i class="fa-solid fa-cogs me-2"></i>Gestión de Menú
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" th:href="@{/insumos}">
+                        <i class="fa-solid fa-boxes me-2"></i>Gestión de Insumos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/logout}" class="btn btn-outline-light">
+                        <i class="fa-solid fa-sign-out-alt me-2"></i> Cerrar sesión
+                    </a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>

@@ -1,178 +1,184 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="componentes/head :: head"></head>
+
 <body>
-<div th:replace="~{componentes/navbar.html}"></div>
-<header class="bg-white shadow-sm py-3">
-  <div class="container d-flex justify-content-between align-items-center">
-    <div>
-      <h1 class="mb-4">Gestión de Menú</h1>
+  <div th:replace="~{componentes/navbar.html}"></div>
+  <header class="bg-white shadow-sm py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="mb-4">Gestión de Menú</h1>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+          data-bs-target="#categoriesModal">
+          <i class="fa-solid fa-tags me-1"></i> Tipos
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newItemModal">
+          <i class="fa-solid fa-plus me-1"></i> Nuevo
+        </button>
+      </div>
     </div>
-    <div class="d-flex gap-2">
-      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#categoriesModal">
-        <i class="fa-solid fa-tags me-1"></i> Tipos
-      </button>
-      <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newItemModal">
-        <i class="fa-solid fa-plus me-1"></i> Nuevo
-      </button>
-    </div>
-  </div>
-</header>
-<main class="container my-4">
-  <div th:if="${mensaje}" class="alert" th:classappend="' alert-' + ${tipoMensaje}" th:text="${mensaje}"></div>
+  </header>
+  <main class="container my-4">
+    <div th:if="${mensaje}" class="alert" th:classappend="' alert-' + ${tipoMensaje}" th:text="${mensaje}"></div>
     <form method="get" th:action="@{/menu}" class="row g-2 align-items-end mb-3">
       <div class="col-sm-6 col-lg-3">
         <label class="form-label">Categoría</label>
-          <select name="categoryId" class="form-select">
-            <option th:selected="${categoryId == null}" th:value="${null}">Todas</option>
-            <option th:each="c : ${categorias}" th:value="${c.id}"
-              th:selected="${categoryId != null and categoryId == c.id}"
-              th:text="${c.nombre}"></option>
-          </select>
+        <select name="categoryId" class="form-select">
+          <option th:selected="${categoryId == null}" th:value="${null}">Todas</option>
+          <option th:each="c : ${categorias}" th:value="${c.id}"
+            th:selected="${categoryId != null and categoryId == c.id}" th:text="${c.nombre}"></option>
+        </select>
       </div>
       <div class="col-sm-6 col-lg-3">
         <button class="btn btn-outline-primary" type="submit"><i class="fa-solid fa-filter me-1"></i> Filtrar</button>
       </div>
     </form>
-  <div class="table-responsive">
-    <table class="table table-hover align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Nombre</th>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
             <th style="width:120px">Precio (S/.)</th>
             <th style="width:160px">Categoría</th>
             <th style="width:120px">Estado</th>
             <th style="width:140px">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:if="${items == null or #lists.isEmpty(items)}">
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${items == null or #lists.isEmpty(items)}">
             <td colspan="5" class="text-center">Sin registros.</td>
-        </tr>
-        <tr th:each="it : ${items}">
-          <td>
-            <div class="fw-semibold" th:text="${it.nombre}"></div>
-            <div class="text-muted small" th:text="${it.descripcion}"></div>
-          </td>
-          <td th:text="${it.precio}"></td>
-          <td th:text="${it.categoria != null ? it.categoria.nombre : '—'}"></td>
-          <td>
-            <span class="badge" th:classappend="${it.disponible} ? 'bg-success' : 'bg-secondary'"
-              th:text="${it.disponible} ? 'Disponible' : 'No disponible'"></span>
-          </td>
-          <td>
-            <form th:action="@{'/menu/delete/' + ${it.id}}" method="post" class="d-inline">
-              <button class="btn btn-sm btn-outline-danger" type="submit">
-                <i class="fa-solid fa-trash"></i> Eliminar
-              </button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</main>
+          </tr>
+          <tr th:each="it : ${items}">
+            <td>
+              <div class="fw-semibold" th:text="${it.nombre}"></div>
+              <div class="text-muted small" th:text="${it.descripcion}"></div>
+            </td>
+            <td th:text="${it.precio}"></td>
+            <td th:text="${it.categoria != null ? it.categoria.nombre : '—'}"></td>
+            <td>
+              <span class="badge" th:classappend="${it.disponible} ? 'bg-success' : 'bg-secondary'"
+                th:text="${it.disponible} ? 'Disponible' : 'No disponible'"></span>
+            </td>
+            <td>
+              <form th:action="@{'/menu/delete/' + ${it.id}}" method="post" class="d-inline">
+                <button class="btn btn-sm btn-outline-danger" type="submit">
+                  <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
 
-<!-- Modal de Categorías -->
-<div class="modal fade" id="categoriesModal" tabindex="-1" aria-labelledby="categoriesModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="categoriesModalLabel"><i class="fas fa-tags me-2 text-primary"></i>Gestión de Categorías</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form th:action="@{/menu/categories/add}" method="post" class="row g-2 align-items-end mb-3">
-          <div class="col-sm-8 col-lg-6">
-            <label class="form-label">Nueva categoría</label>
-            <input class="form-control" type="text" name="nombre" placeholder="Ej: Sopas" required>
-          </div>
-          <div class="col-sm-4">
-            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-plus me-1"></i> Agregar</button>
-            </div>
-        </form>
-
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-light">
-              <tr>
-                <th style="width:120px">ID</th>
-                <th>Nombre</th>
-                <th style="width:140px">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:if="${categorias == null or #lists.isEmpty(categorias)}">
-                <td colspan="3" class="text-center">Sin categorías.</td>
-              </tr>
-              <tr th:each="c : ${categorias}">
-                <td th:text="${c.id}"></td>
-                <td th:text="${c.nombre}"></td>
-                <td>
-                  <form class="d-inline" th:action="@{'/menu/categories/delete/' + ${c.id}}" method="post">
-                    <button class="btn btn-sm btn-outline-danger" type="submit">
-                      <i class="fa-solid fa-trash"></i> Eliminar
-                    </button>
-                  </form>
-                </td>
-              </tr>
-              </tbody>
-          </table>
+  <!-- Modal de Categorías -->
+  <div class="modal fade" id="categoriesModal" tabindex="-1" aria-labelledby="categoriesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoriesModalLabel"><i class="fas fa-tags me-2 text-primary"></i>Gestión de
+            Categorías</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-    </div>
+        <div class="modal-body">
+          <form th:action="@{/menu/categories/add}" method="post" class="row g-2 align-items-end mb-3">
+            <div class="col-sm-8 col-lg-6">
+              <label class="form-label">Nueva categoría</label>
+              <input class="form-control" type="text" name="nombre" placeholder="Ej: Sopas" required>
+            </div>
+            <div class="col-sm-4">
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-plus me-1"></i> Agregar</button>
+            </div>
+          </form>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:120px">ID</th>
+                  <th>Nombre</th>
+                  <th style="width:140px">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:if="${categorias == null or #lists.isEmpty(categorias)}">
+                  <td colspan="3" class="text-center">Sin categorías.</td>
+                </tr>
+                <tr th:each="c : ${categorias}">
+                  <td th:text="${c.id}"></td>
+                  <td th:text="${c.nombre}"></td>
+                  <td>
+                    <form class="d-inline" th:action="@{'/menu/categories/delete/' + ${c.id}}" method="post">
+                      <button class="btn btn-sm btn-outline-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i> Eliminar
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-<!-- Modal Nuevo Platillo -->
-<div class="modal fade" id="newItemModal" tabindex="-1" aria-labelledby="newItemModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="newItemModalLabel"><i class="fas fa-plus me-2 text-primary"></i>Nuevo Platillo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form th:action="@{/menu/add}" method="post" class="card shadow-sm p-3 border-0">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Nombre</label>
-              <input type="text" name="nombre" class="form-control" required>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Precio (S/.)</label>
-              <input type="number" step="0.01" min="0" name="precio" class="form-control" required>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Categoría</label>
-              <select name="categoriaId" class="form-select" required>
-                <option value="" selected disabled>Seleccione</option>
-                <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
-              </select>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Descripción</label>
-              <textarea name="descripcion" rows="2" class="form-control"></textarea>
-            </div>
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="disponible" id="disponibleForm">
-                <label class="form-check-label" for="disponibleForm">Disponible</label>
+  <!-- Modal Nuevo Platillo -->
+  <div class="modal fade" id="newItemModal" tabindex="-1" aria-labelledby="newItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newItemModalLabel"><i class="fas fa-plus me-2 text-primary"></i>Nuevo Platillo
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form th:action="@{/menu/add}" method="post" class="card shadow-sm p-3 border-0">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="nombre" class="form-control" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Precio (S/.)</label>
+                <input type="number" step="0.01" min="0" name="precio" class="form-control" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Categoría</label>
+                <select name="categoriaId" class="form-select" required>
+                  <option value="" selected disabled>Seleccione</option>
+                  <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Descripción</label>
+                <textarea name="descripcion" rows="2" class="form-control"></textarea>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="disponible" id="disponibleForm">
+                  <label class="form-check-label" for="disponibleForm">Disponible</label>
+                </div>
               </div>
             </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-save me-1"></i> Guardar</button>
+            </div>
+          </form>
         </div>
-        <div class="d-flex justify-content-end gap-2 mt-3">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-save me-1"></i> Guardar</button>
-        </div>
-        </form>
       </div>
     </div>
   </div>
-</div>
 
 </body>
+
 <div th:replace="componentes/footer :: footer"></div>
+
 </html>

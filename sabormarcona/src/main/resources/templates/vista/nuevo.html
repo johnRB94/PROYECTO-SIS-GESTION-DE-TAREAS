@@ -1,76 +1,160 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="componentes/head :: head"></head>
+
+<head th:replace="~{componentes/head.html}"></head>
+
 <body class="bg-light d-flex flex-column min-vh-100">
-<div th:replace="~{componentes/navbar.html}"></div>
+    <div th:replace="~{componentes/navbar.html}"></div>
+
     <div class="container d-flex justify-content-center align-items-center my-5 flex-grow-1">
         <div class="row justify-content-center w-100">
-            <div class="col-md-7">
+            <div class="col-md-8">
                 <div class="card shadow-lg">
                     <div class="card-header bg-success text-white text-center">
-                        <h3>Registro de Nuevo Empleado</h3>
+                        <h3>
+                            <i class="fa-solid fa-user-plus me-2"></i>Registro de Nuevo Empleado
+                        </h3>
                     </div>
                     <div class="card-body p-4">
-                    
-                        <div th:if="${registroExitoso}" class="alert alert-success alert-dismissible fade show" role="alert">
-                            <span th:text="${mensajeExito}"></span>
+
+                        <div th:if="${registroExitoso}" class="alert alert-success alert-dismissible fade show"
+                            role="alert">
+                            <i class="fa-solid fa-check-circle me-2"></i>
+                            <span th:text="${mensajeExito}">Empleado registrado exitosamente</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                        
-                        <div th:if="${error}" class="alert alert-danger" role="alert">
-                            <span th:text="${error}"></span>
+
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                            <span th:text="${error}">Error al registrar</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
 
-                        <form th:action="@{/nuevo}" th:object="${usuario}" method="post">
-                            
+                        <form th:action="@{/usuarios/nuevo}" th:object="${usuario}" method="post">
+
+                            <h5 class="mb-3 text-primary">
+                                <i class="fa-solid fa-id-card me-2"></i>Información Personal
+                            </h5>
+
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre Completo</label>
-                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej: Juan Pérez" required>
+                                <label for="nombre" class="form-label fw-bold">
+                                    <i class="fa-solid fa-user me-1"></i>Nombre Completo *
+                                </label>
+                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}"
+                                    placeholder="Ej: Juan Pérez García" required>
+                                <div class="form-text">Ingrese el nombre completo del empleado</div>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="rol" class="form-label">Rol del Empleado</label>
+                                <label for="email" class="form-label fw-bold">
+                                    <i class="fa-solid fa-envelope me-1"></i>Correo Electrónico *
+                                </label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}"
+                                    placeholder="Ej: juan.perez@sabormarcona.com" required>
+                                <div class="form-text">Se usará para notificaciones y comunicación</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rol" class="form-label fw-bold">
+                                    <i class="fa-solid fa-briefcase me-1"></i>Rol del Empleado *
+                                </label>
                                 <select class="form-select" id="rol" th:field="*{rol}" required>
                                     <option value="" disabled selected>-- Seleccione un rol --</option>
-                                    <option value="Mesero">Mesero</option>
-                                    <option value="Mesera">Mesera</option>
-                                    <option value="Cocinero">Cocinero</option>
-                                    <option value="Chef Principal">Chef Principal</option>
-                                    <option value="Bartender">Bartender</option>
-                                    <option value="ADMIN">Administrador</option>
+                                    <option value="MESERO">Mesero/a</option>
+                                    <option value="COCINERO">Cocinero/a</option>
+                                    <option value="CHEF">Chef Principal</option>
+                                    <option value="BARTENDER">Bartender</option>
+                                    <option value="CAJERO">Cajero/a</option>
+                                    <option value="ADMINISTRADOR">Administrador</option>
                                 </select>
+                                <div class="form-text">Seleccione el puesto que ocupará</div>
                             </div>
-                            
+
                             <hr class="my-4">
+
+                            <h5 class="mb-3 text-primary">
+                                <i class="fa-solid fa-key me-2"></i>Credenciales de Acceso
+                            </h5>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="username" class="form-label">Nombre de Usuario (para login)</label>
-                                    <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Ej: jperez" required>
+                                    <label for="username" class="form-label fw-bold">
+                                        <i class="fa-solid fa-user-shield me-1"></i>Nombre de Usuario *
+                                    </label>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}"
+                                        placeholder="Ej: jperez" pattern="[a-zA-Z0-9._-]{3,20}"
+                                        title="Solo letras, números, punto, guión bajo y guión medio (3-20 caracteres)"
+                                        required>
+                                    <div class="form-text">Para iniciar sesión en el sistema</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="password" class="form-label">Contraseña</label>
-                                    <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                    <label for="password" class="form-label fw-bold">
+                                        <i class="fa-solid fa-lock me-1"></i>Contraseña *
+                                    </label>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}"
+                                        minlength="6" placeholder="Mínimo 6 caracteres" required>
+                                    <div class="form-text">Mínimo 6 caracteres</div>
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" class="form-control" id="confirmarContrasena" name="confirmarContrasena" required>
+                                <label for="confirmarContrasena" class="form-label fw-bold">
+                                    <i class="fa-solid fa-lock-open me-1"></i>Confirmar Contraseña *
+                                </label>
+                                <input type="password" class="form-control" id="confirmarContrasena"
+                                    name="confirmarContrasena" minlength="6" placeholder="Repita la contraseña"
+                                    required>
+                                <div id="mensajeContrasena" class="form-text text-danger d-none">
+                                    Las contraseñas no coinciden
+                                </div>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success btn-lg text-white">
-                                    <i class="fas fa-user-plus"></i> Registrar Empleado
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fa-solid fa-user-plus me-2"></i>Registrar Empleado
                                 </button>
+                                <a th:href="@{/principal}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-arrow-left me-2"></i>Volver al Menú Principal
+                                </a>
                             </div>
                         </form>
+                    </div>
+                    <div class="card-footer text-muted text-center">
+                        <small>* Campos obligatorios</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-       
+
+    <script>
+        document.getElementById('confirmarContrasena').addEventListener('input', function () {
+            const password = document.getElementById('password').value;
+            const confirmar = this.value;
+            const mensaje = document.getElementById('mensajeContrasena');
+            const submitBtn = document.querySelector('button[type="submit"]');
+
+            if (password !== confirmar) {
+                mensaje.classList.remove('d-none');
+                this.classList.add('is-invalid');
+                submitBtn.disabled = true;
+            } else {
+                mensaje.classList.add('d-none');
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+                submitBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function () {
+            const confirmar = document.getElementById('confirmarContrasena');
+            if (confirmar.value !== '') {
+                confirmar.dispatchEvent(new Event('input'));
+            }
+        });
+    </script>
 </body>
-<div th:replace="componentes/footer :: footer"></div>  
+
+<div th:replace="~{componentes/footer.html}"></div>
+
 </html>

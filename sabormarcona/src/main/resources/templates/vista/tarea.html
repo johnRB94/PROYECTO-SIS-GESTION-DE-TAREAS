@@ -1,44 +1,51 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{componentes/head.html}"></head>
+
 <body>
     <div th:replace="~{componentes/navbar.html}"></div>
     <div class="container mt-5">
-    <h1 class="mb-4">Panel de Gestión de Tareas</h1>
+        <h1 class="mb-4">
+            <i class="fa-solid fa-tasks me-2 text-primary"></i>Panel de Gestión de Tareas
+        </h1>
     </div>
     <main class="container my-4">
-        <div th:if="${mensaje}" th:class="'alert alert-' + ${tipoMensaje} + ' alert-dismissible fade show'" role="alert">
+        <div th:if="${mensaje}" th:class="'alert alert-' + ${tipoMensaje} + ' alert-dismissible fade show'"
+            role="alert">
+            <i class="fa-solid fa-check-circle me-2"></i>
             <span th:text="${mensaje}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        
+
         <div class="row g-4">
             <div class="col-lg-5">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-white py-3">
-                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-users me-2 text-primary"></i>Seleccionar Trabajador</h2>
+                        <h2 class="h5 mb-0 fw-bold">
+                            <i class="fa-solid fa-users me-2 text-primary"></i>Seleccionar Trabajador
+                        </h2>
                     </div>
-                    <div class="card-body overflow-auto overflow-auto-max">
+                    <div class="card-body overflow-auto" style="max-height: 400px;">
                         <div class="list-group list-group-flush">
-                           
                             <div th:each="trabajador : ${trabajadores}"
-                                 class="list-group-item list-group-item-action worker-card"
-                                 th:data-id="${trabajador.id}"
-                                 th:data-nombre="${trabajador.nombre}"
-                                 th:data-rol="${trabajador.rol}"
-                                 onclick="selectWorkerFromData(this)">
+                                class="list-group-item list-group-item-action worker-card" th:data-id="${trabajador.id}"
+                                th:data-nombre="${trabajador.nombre}" th:data-rol="${trabajador.rol}"
+                                onclick="selectWorkerFromData(this)" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
-                                    <div th:class="'worker-card-badge ' + ${trabajador.colorBadge}" th:text="${trabajador.iniciales}">
+                                    <div th:class="'worker-card-badge rounded-circle d-flex align-items-center justify-content-center text-white fw-bold ' + ${trabajador.colorBadge}"
+                                        style="width: 45px; height: 45px; font-size: 18px;"
+                                        th:text="${trabajador.iniciales}">
                                     </div>
-                                    <div>
+                                    <div class="ms-3">
                                         <h5 class="mb-1 fw-bold" th:text="${trabajador.nombre}"></h5>
                                         <small class="text-muted" th:text="${trabajador.rol}"></small>
                                     </div>
                                 </div>
                             </div>
-                           
+
                             <div th:if="${#lists.isEmpty(trabajadores)}" class="text-center py-4 text-muted">
-                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <i class="fa-solid fa-users fa-3x mb-3"></i>
                                 <p>No hay trabajadores registrados</p>
                             </div>
                         </div>
@@ -49,48 +56,72 @@
             <div class="col-lg-7">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-white py-3">
-                        <h2 class="h5 mb-0 fw-bold"><i class="fas fa-tasks me-2 text-primary"></i>Asignar Nueva Tarea</h2>
+                        <h2 class="h5 mb-0 fw-bold">
+                            <i class="fa-solid fa-tasks me-2 text-primary"></i>Asignar Nueva Tarea
+                        </h2>
                     </div>
                     <div class="card-body">
-                        <div id="currentAssignment" class="alert alert-info mb-4">
-                            <p class="mb-0">Asignando tarea a: <strong id="selectedWorkerInfo"></strong></p>
+                        <div id="currentAssignment" class="alert alert-info mb-4" style="display: none;">
+                            <p class="mb-0">
+                                Asignando tarea a: <strong id="selectedWorkerInfo">Ninguno seleccionado</strong>
+                            </p>
                         </div>
-                       
-                        <form th:action="@{/tareas/agregar}" method="post" id="taskForm">
+
+                        <form th:action="@{/tareas}" method="post" id="taskForm">
                             <div class="mb-3">
-                                <label for="titulo" class="form-label">Título de la Tarea</label>
-                                <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ej: Preparar Lomo Saltado especial" required>
+                                <label for="titulo" class="form-label fw-bold">
+                                    <i class="fa-solid fa-heading me-1"></i>Título de la Tarea *
+                                </label>
+                                <input type="text" class="form-control" id="titulo" name="titulo"
+                                    placeholder="Ej: Preparar Lomo Saltado especial" required>
+                                <small class="form-text text-muted">Campo obligatorio</small>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripción (Opcional)</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="2"></textarea>
+                                <label for="descripcion" class="form-label fw-bold">
+                                    <i class="fa-solid fa-align-left me-1"></i>Descripción (Opcional)
+                                </label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
+                                    placeholder="Describe los detalles de la tarea..."></textarea>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaLimiteStr" class="form-label">Fecha Límite</label>
-                                    <input type="datetime-local" class="form-control" id="fechaLimiteStr" name="fechaLimiteStr" required>
+                                    <label for="fechaLimite" class="form-label fw-bold">
+                                        <i class="fa-solid fa-calendar me-1"></i>Fecha Límite *
+                                    </label>
+                                    <input type="datetime-local" class="form-control" id="fechaLimite"
+                                        name="fechaLimite" required>
+                                    <small class="form-text text-muted">Debe ser una fecha futura</small>
                                 </div>
+
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Prioridad</label>
+                                    <label class="form-label fw-bold">
+                                        <i class="fa-solid fa-exclamation-triangle me-1"></i>Prioridad *
+                                    </label>
                                     <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-outline-success w-100 priority-badge" onclick="selectPriority(this, 'Baja')">Baja</button>
-                                        <button type="button" class="btn btn-outline-warning w-100 priority-badge" onclick="selectPriority(this, 'Media')">Media</button>
-                                        <button type="button" class="btn btn-outline-danger w-100 priority-badge" onclick="selectPriority(this, 'Alta')">Alta</button>
+                                        <button type="button" class="btn btn-outline-success flex-fill priority-btn"
+                                            onclick="selectPriority(this, 'BAJA')">Baja</button>
+                                        <button type="button" class="btn btn-outline-warning flex-fill priority-btn"
+                                            onclick="selectPriority(this, 'MEDIA')">Media</button>
+                                        <button type="button" class="btn btn-outline-danger flex-fill priority-btn"
+                                            onclick="selectPriority(this, 'ALTA')">Alta</button>
                                     </div>
-                                    <input type="hidden" id="prioridad" name="prioridad" required>
+                                    <input type="hidden" id="prioridad" name="prioridad" value="">
+                                    <small class="form-text text-muted d-block">Selecciona una prioridad</small>
                                 </div>
                             </div>
-                           
-                            <input type="hidden" id="trabajadorId" name="trabajadorId">
-                           
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+
+                            <input type="hidden" name="estado" value="PENDIENTE">
+
+                            <input type="hidden" id="trabajadorId" name="trabajadorAsignado.id" value="">
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                                 <button type="button" class="btn btn-secondary" onclick="clearForm()">
-                                    <i class="fas fa-eraser me-1"></i> Limpiar
+                                    <i class="fa-solid fa-broom me-1"></i> Limpiar
                                 </button>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-paper-plane me-1"></i> Asignar Tarea
+                                    <i class="fa-solid fa-paper-plane me-1"></i> Asignar Tarea
                                 </button>
                             </div>
                         </form>
@@ -104,9 +135,9 @@
                 <div class="card shadow-sm">
                     <div class="card-header bg-white py-3">
                         <h2 class="h5 mb-0 fw-bold">
-                            <i class="fas fa-list-check me-2 text-primary"></i>
+                            <i class="fa-solid fa-list-check me-2 text-primary"></i>
                             Tareas Asignadas
-                            <span class="badge bg-primary" th:text="${totalTareas} ?: 0"></span>
+                            <span class="badge bg-primary" th:text="${tareas.size()} ?: 0"></span>
                         </h2>
                     </div>
                     <div class="card-body">
@@ -128,36 +159,53 @@
                                             <p class="fw-bold mb-1" th:text="${tarea.titulo}"></p>
                                             <p class="text-muted mb-0 small" th:text="${tarea.descripcion}"></p>
                                         </td>
-                                        <td th:text="${tarea.trabajadorAsignado != null ? tarea.trabajadorAsignado.nombre : 'No asignado'}"></td>
+                                        <td>
+                                            <span th:if="${tarea.trabajadorAsignado != null}"
+                                                th:text="${tarea.trabajadorAsignado.nombre}"></span>
+                                            <span th:if="${tarea.trabajadorAsignado == null}"
+                                                class="badge bg-secondary">No asignado</span>
+                                        </td>
                                         <td>
                                             <span class="badge rounded-pill text-white"
-                                                  th:classappend="${tarea.prioridad} == 'Alta' ? 'bg-danger' : (${tarea.prioridad} == 'Media' ? 'bg-warning' : 'bg-success')"
-                                                  th:text="${tarea.prioridad}"></span>
+                                                th:classappend="${tarea.prioridad} == 'ALTA' ? 'bg-danger' : (${tarea.prioridad} == 'MEDIA' ? 'bg-warning' : 'bg-success')"
+                                                th:text="${tarea.prioridad}"></span>
                                         </td>
                                         <td th:text="${#temporals.format(tarea.fechaLimite, 'dd/MM/yyyy HH:mm')}"></td>
-                                        <td>
-                                            <span class="badge bg-info text-white" th:text="${tarea.estado}"></span>
+                                        <td th:switch="${tarea.estado.toString()}">
+                                            <span th:case="'PENDIENTE'" class="badge rounded-pill text-white bg-danger"
+                                                th:text="PENDIENTE"></span>
+                                            <span th:case="'EN_PROGRESO'"
+                                                class="badge rounded-pill text-white bg-warning"
+                                                th:text="EN_PROGRESO"></span>
+                                            <span th:case="'COMPLETADA'"
+                                                class="badge rounded-pill text-white bg-success"
+                                                th:text="COMPLETADA"></span>
                                         </td>
+
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-outline-warning btn-sm"
-                                                        th:onclick="|editarTarea(${tarea.id})|"
-                                                        title="Modificar tarea">
-                                                    <i class="fas fa-edit"></i>
+                                                    data-bs-toggle="modal" data-bs-target="#modalEditarTarea"
+                                                    th:onclick="'cargarTareaParaEditar(' + ${tarea.id} + ')'"
+                                                    title="Editar tarea">
+                                                    <i class="fa-solid fa-edit"></i>
                                                 </button>
-                                                <form th:action="@{'/tareas/eliminar/' + ${tarea.id}}" method="post" class="d-inline">
+
+                                                <form th:action="@{'/tareas/' + ${tarea.id} + '/eliminar'}"
+                                                    method="post" class="d-inline">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm"
-                                                            onclick="return confirm('¿Estás seguro de eliminar esta tarea?')"
-                                                            title="Eliminar tarea">
-                                                        <i class="fas fa-trash"></i>
+                                                        onclick="return confirm('¿Estás seguro de eliminar esta tarea?')"
+                                                        title="Eliminar tarea">
+                                                        <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </form>
                                             </div>
                                         </td>
                                     </tr>
+
                                     <tr th:if="${#lists.isEmpty(tareas)}">
                                         <td colspan="6" class="text-center py-4 text-muted">
-                                            <i class="fas fa-tasks fa-3x mb-3"></i>
+                                            <i class="fa-solid fa-tasks fa-3x mb-3"></i>
                                             <p>No hay tareas asignadas</p>
                                         </td>
                                     </tr>
@@ -170,63 +218,233 @@
         </div>
     </main>
 
-    <div class="modal fade" id="modalEditarTarea" tabindex="-1" aria-labelledby="modalEditarTareaLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- MODAL: EDITAR TAREA -->
+    <div class="modal fade" id="modalEditarTarea" tabindex="-1" aria-labelledby="modalEditarTareaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-            <div class="modal-header bg-warning text-white">
-                <h5 class="modal-title" id="modalEditarTareaLabel"><i class="fas fa-edit me-2"></i>Editar Tarea</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form th:action="@{/tareas/actualizar}" method="post" id="editTaskForm">
-                <div class="modal-body">
-                    <input type="hidden" id="editId" name="id">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="modalEditarTareaLabel">
+                        <i class="fa-solid fa-edit me-2"></i>Editar Tarea
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
 
-                    <input type="hidden" id="editTrabajadorId" name="trabajadorId">
+                <form id="editTaskForm" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="editId" name="id" value="">
 
-                    <div class="mb-3">
-                        <label for="editTitulo" class="form-label">Título de la Tarea</label>
-                        <input type="text" class="form-control" id="editTitulo" name="titulo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editDescripcion" class="form-label">Descripción (Opcional)</label>
-                        <textarea class="form-control" id="editDescripcion" name="descripcion" rows="2"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="editFechaLimiteStr" class="form-label">Fecha Límite</label>
-                            <input type="datetime-local" class="form-control" id="editFechaLimiteStr" name="fechaLimiteStr" required>
+                        <div class="mb-3">
+                            <label for="editTitulo" class="form-label fw-bold">
+                                <i class="fa-solid fa-heading me-1"></i>Título de la Tarea *
+                            </label>
+                            <input type="text" class="form-control" id="editTitulo" name="titulo" required>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Prioridad</label>
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-success w-100 priority-badge-edit" onclick=" selectPriorityEdit (this, 'Baja')">Baja</button>
-                                <button type="button" class="btn btn-outline-warning w-100 priority-badge-edit" onclick=" selectPriorityEdit (this, 'Media')">Media</button>
-                                <button type="button" class="btn btn-outline-danger w-100 priority-badge-edit" onclick=" selectPriorityEdit (this, 'Alta')">Alta</button>
+
+                        <div class="mb-3">
+                            <label for="editDescripcion" class="form-label fw-bold">
+                                <i class="fa-solid fa-align-left me-1"></i>Descripción (Opcional)
+                            </label>
+                            <textarea class="form-control" id="editDescripcion" name="descripcion" rows="3"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editPrioridad" class="form-label fw-bold">
+                                    <i class="fa-solid fa-exclamation-triangle me-1"></i>Prioridad
+                                </label>
+                                <select class="form-select" id="editPrioridad" name="prioridad">
+                                    <option value="">Seleccionar</option>
+                                    <option value="ALTA">Alta</option>
+                                    <option value="MEDIA">Media</option>
+                                    <option value="BAJA">Baja</option>
+                                </select>
                             </div>
-                            <input type="hidden" id="editPrioridad" name="prioridad" required>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="editFechaLimite" class="form-label fw-bold">
+                                    <i class="fa-solid fa-calendar me-1"></i>Fecha Límite *
+                                </label>
+                                <input type="datetime-local" class="form-control" id="editFechaLimite"
+                                    name="fechaLimite" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editEstado" class="form-label fw-bold">
+                                <i class="fa-solid fa-info-circle me-1"></i>Estado *
+                            </label>
+                            <select class="form-select" id="editEstado" name="estado" required>
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="EN_PROGRESO">En Progreso</option>
+                                <option value="COMPLETADA">Completada</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editTrabajador" class="form-label fw-bold">
+                                <i class="fa-solid fa-user me-1"></i>Asignar a Trabajador
+                            </label>
+                            <select class="form-select" id="editTrabajador" name="trabajadorAsignado.id">
+                                <option value="">Sin asignar</option>
+                                <option th:each="trabajador : ${trabajadores}" th:value="${trabajador.id}"
+                                    th:text="${trabajador.nombre + ' (' + trabajador.rol + ')'}">
+                                </option>
+                            </select>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editEstado" class="form-label">Estado</label>
-                        <select class="form-select" id="editEstado" name="estado" required>
-                            <option value="PENDIENTE">Pendiente</option>
-                            <option value="EN_PROGRESO">En Progreso</option>
-                            <option value="COMPLETADA">Completada</option>
-                        </select>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fa-solid fa-save me-1"></i>Guardar Cambios
+                        </button>
                     </div>
-                    <div class="alert alert-info mt-3">
-                        <p class="mb-0">Asignado a: <strong id="editWorkerInfo"></strong></p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-warning"><i class="fas fa-save me-1"></i>Guardar Cambios</button>
-                </div>
-            </form>
+                </form>
             </div>
         </div>
     </div>
-    <script th:src="@{/js/tarea.js}"></script>
+
+    <script>
+        document.getElementById('taskForm').addEventListener('submit', function (event) {
+            const prioridad = document.getElementById('prioridad').value;
+            if (!prioridad) {
+                event.preventDefault();
+                mostrarError('Por favor selecciona una prioridad (Baja, Media o Alta)');
+                return false;
+            }
+
+            const fechaLimite = document.getElementById('fechaLimite').value;
+            if (!fechaLimite) {
+                event.preventDefault();
+                mostrarError('Por favor ingresa una fecha límite');
+                return false;
+            }
+
+            const fecha = new Date(fechaLimite);
+            const ahora = new Date();
+
+            if (fecha <= ahora) {
+                event.preventDefault();
+                mostrarError('La fecha límite debe ser en el futuro');
+                return false;
+            }
+
+            const titulo = document.getElementById('titulo').value.trim();
+            if (!titulo) {
+                event.preventDefault();
+                mostrarError('Por favor ingresa un título para la tarea');
+                return false;
+            }
+
+            console.log('Formulario válido, enviando...');
+        });
+
+        function mostrarError(mensaje) {
+            const alertaExistente = document.getElementById('alertaError');
+            if (alertaExistente) {
+                alertaExistente.remove();
+            }
+
+            const alerta = document.createElement('div');
+            alerta.id = 'alertaError';
+            alerta.className = 'alert alert-danger alert-dismissible fade show';
+            alerta.setAttribute('role', 'alert');
+            alerta.innerHTML = `
+                <i class="fa-solid fa-exclamation-circle me-2"></i>
+                <strong>Error de Validación:</strong> ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            const main = document.querySelector('main');
+            main.insertBefore(alerta, main.firstChild);
+
+            setTimeout(function () {
+                alerta.remove();
+            }, 5000);
+        }
+
+        function cargarTareaParaEditar(tareaId) {
+            fetch('/tareas/' + tareaId + '/datos')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error al cargar la tarea');
+                        return;
+                    }
+
+                    document.getElementById('editId').value = data.id;
+                    document.getElementById('editTitulo').value = data.titulo || '';
+                    document.getElementById('editDescripcion').value = data.descripcion || '';
+                    document.getElementById('editPrioridad').value = data.prioridad || '';
+                    document.getElementById('editFechaLimite').value = data.fechaLimite || '';
+                    document.getElementById('editEstado').value = data.estado || 'PENDIENTE';
+                    document.getElementById('editTrabajador').value = data.trabajadorId || '';
+
+                    const form = document.getElementById('editTaskForm');
+                    form.action = '/tareas/' + tareaId + '/editar';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al cargar la tarea');
+                });
+        }
+
+        function selectWorkerFromData(element) {
+            const id = element.getAttribute('data-id');
+            const nombre = element.getAttribute('data-nombre');
+            const rol = element.getAttribute('data-rol');
+
+            document.getElementById('trabajadorId').value = id;
+            document.getElementById('currentAssignment').style.display = 'block';
+            document.getElementById('selectedWorkerInfo').textContent = nombre + ' (' + rol + ')';
+
+            document.querySelectorAll('.worker-card').forEach(el => {
+                el.classList.remove('bg-light');
+            });
+            element.classList.add('bg-light');
+        }
+
+        function selectPriority(button, priority) {
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            document.getElementById('prioridad').value = priority;
+
+            const alertaError = document.getElementById('alertaError');
+            if (alertaError) {
+                alertaError.remove();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('taskForm').reset();
+            document.getElementById('trabajadorId').value = '';
+            document.getElementById('prioridad').value = '';
+            document.getElementById('currentAssignment').style.display = 'none';
+            document.querySelectorAll('.worker-card').forEach(el => {
+                el.classList.remove('bg-light');
+            });
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            const alertaError = document.getElementById('alertaError');
+            if (alertaError) {
+                alertaError.remove();
+            }
+        }
+
+        document.getElementById('modalEditarTarea').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('editTaskForm').reset();
+        });
+    </script>
 </body>
+
 <div th:replace="~{componentes/footer.html}"></div>
+
 </html>

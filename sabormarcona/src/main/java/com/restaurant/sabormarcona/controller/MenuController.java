@@ -1,6 +1,7 @@
 package com.restaurant.sabormarcona.controller;
 
-import com.restaurant.sabormarcona.model.Menu;
+import com.restaurant.sabormarcona.model.MenuCategoria;
+import com.restaurant.sabormarcona.model.MenuItem;
 import com.restaurant.sabormarcona.service.MenuService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -23,8 +24,8 @@ public class MenuController {
                            Model model,
                            HttpSession session,
                            HttpServletRequest request) {
-        List<Menu> categorias = menuService.findAllCategories();
-        List<Menu.MenuItem> items = (categoryId == null) ?
+        List<MenuCategoria> categorias = menuService.findAllCategories();
+        List<MenuItem> items = (categoryId == null) ?
                 menuService.findAllItems() : menuService.findItemsByCategory(categoryId);
         model.addAttribute("categorias", categorias);
         model.addAttribute("items", items);
@@ -41,7 +42,6 @@ public class MenuController {
                            @RequestParam Long categoriaId,
                            @RequestParam( defaultValue = "false") boolean disponible,
                            RedirectAttributes ra) {
-        // Validación simple
         if (nombre == null || nombre.trim().isEmpty()) {
             ra.addFlashAttribute("mensaje", "El nombre es obligatorio");
             ra.addFlashAttribute("tipoMensaje", "danger");
@@ -54,7 +54,7 @@ public class MenuController {
             ra.addFlashAttribute("tipoMensaje", "danger");
             return "redirect:/menu";
         }
-        Optional<Menu> cat = menuService.findCategoryById(categoriaId);
+    Optional<MenuCategoria> cat = menuService.findCategoryById(categoriaId);
         if (cat.isEmpty()) {
             ra.addFlashAttribute("mensaje", "Categoría no encontrada");
             ra.addFlashAttribute("tipoMensaje", "danger");
@@ -66,7 +66,7 @@ public class MenuController {
         return "redirect:/menu";
     }
 
-    // ELIMINAR ÍTEM (simulado)
+    // ELIMINAR ÍTEM (POST)
     @PostMapping("/delete/{id}")
     public String eliminar (@PathVariable Long id, RedirectAttributes ra) {
         if (menuService.removeItem(id)) {

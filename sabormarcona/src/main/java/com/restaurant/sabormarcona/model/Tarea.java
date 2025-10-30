@@ -1,13 +1,21 @@
 package com.restaurant.sabormarcona.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tareas")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = "trabajadorAsignado")
 public class Tarea {
 
     @Id
@@ -15,37 +23,26 @@ public class Tarea {
     private Long id;
 
     @NotEmpty(message = "El título no puede estar vacío.")
+    @Column(name = "titulo", nullable = false, length = 100)
     private String titulo;
 
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
+
+    @Column(name = "prioridad", length = 20)
     private String prioridad;
 
     @NotNull(message = "La fecha límite es obligatoria.")
     @Future(message = "La fecha límite debe ser en el futuro.")
+    @Column(name = "fecha_limite")
     private LocalDateTime fechaLimite;
 
     @Enumerated(EnumType.STRING)
-    private TaskStatus estado;
+    @Column(name = "estado", length = 20)
+    @Builder.Default
+    private TaskStatus estado = TaskStatus.PENDIENTE;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "trabajador_id")
     private Usuario trabajadorAsignado;
-
-    public Tarea() {}
-
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public String getPrioridad() { return prioridad; }
-    public void setPrioridad(String prioridad) { this.prioridad = prioridad; }
-    public LocalDateTime getFechaLimite() { return fechaLimite; }
-    public void setFechaLimite(LocalDateTime fechaLimite) { this.fechaLimite = fechaLimite; }
-    public TaskStatus getEstado() { return estado; }
-    public void setEstado(TaskStatus estado) { this.estado = estado; }
-    public Usuario getTrabajadorAsignado() { return trabajadorAsignado; }
-    public void setTrabajadorAsignado(Usuario trabajadorAsignado) { this.trabajadorAsignado = trabajadorAsignado; }
 }

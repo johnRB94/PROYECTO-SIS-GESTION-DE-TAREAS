@@ -1,73 +1,80 @@
 package com.restaurant.sabormarcona.service;
 
-import com.restaurant.sabormarcona.model.Menu;
+import com.restaurant.sabormarcona.model.MenuCategoria;
+import com.restaurant.sabormarcona.model.MenuItem;
+import com.restaurant.sabormarcona.repository.MenuCategoriaRepository;
+import com.restaurant.sabormarcona.repository.MenuItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class MenuService {
 
-    private final List<Menu> categories = new ArrayList<>();
-    private final List<Menu.MenuItem> items = new ArrayList<>(); 
-    private final AtomicLong catSeq = new AtomicLong(0);
-    private final AtomicLong itemSeq = new AtomicLong(0);
+    @Autowired
+    private MenuCategoriaRepository categoriaRepository;
+    
+    @Autowired
+    private MenuItemRepository itemRepository;
 
-    public MenuService() {
-        Menu entradas = addCategory("Entradas");
-        Menu fondos   = addCategory("Platos de Fondo");
-        Menu bebidas  = addCategory("Bebidas");
-        Menu postres  = addCategory("Postres");
-
-        addItem("Ceviche clásico", new BigDecimal("28.00"), "Pescado fresco con limón y ají limo", entradas, true);
-        addItem("Arroz con mariscos", new BigDecimal("32.00"), "Mixto con mariscos de la casa", fondos, true);
-        addItem("Chicha morada", new BigDecimal("8.00"), "Vaso 500ml", bebidas, true);
-        addItem("Suspiro a la limeña", new BigDecimal("12.00"), "Porción individual", postres, true);
+    // CATEGORÍAS
+    public List<MenuCategoria> findAllCategories() {
+        return categoriaRepository.findAllByOrderByNombreAsc();
     }
 
-    public List<Menu> findAllCategories() {
-        return new ArrayList<>(categories);
-    }
-
-    public Menu addCategory(String nombre) {
-        Menu c = new Menu(catSeq.incrementAndGet(), nombre);
-        categories.add(c);
-        return c;
+    public MenuCategoria addCategory(String nombre) {
+        MenuCategoria categoria = new MenuCategoria();
+        categoria.setNombre(nombre);
+        return categoriaRepository.save(categoria);
     }
 
     public boolean deleteCategory(Long id) {
-        return categories.removeIf(c -> Objects.equals(c.getId(), id));
+        if (categoriaRepository.existsById(id)) {
+            categoriaRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
-    public Optional<Menu> findCategoryById(Long id) {
-        return categories.stream().filter(c -> Objects.equals(c.getId(), id)).findFirst();
+    public Optional<MenuCategoria> findCategoryById(Long id) {
+        return categoriaRepository.findById(id);
     }
 
-    public List<Menu.MenuItem> findAllItems() { 
-        return new ArrayList<>(items);
+    // ITEMS
+    public List<MenuItem> findAllItems() {
+        return itemRepository.findAll();
     }
 
-    public List<Menu.MenuItem> findItemsByCategory(Long categoryId) { 
+    public List<MenuItem> findItemsByCategory(Long categoryId) {
         if (categoryId == null) return findAllItems();
-        return items.stream()
-                .filter(i -> i.getCategoria() != null && Objects.equals(i.getCategoria().getId(), categoryId))
-                .collect(Collectors.toList());
+        return itemRepository.findItemsDisponiblesPorCategoria(categoryId);
     }
 
-    public Menu.MenuItem addItem(String nombre, BigDecimal precio, String descripcion, Menu categoria, boolean disponible) {
-        Menu.MenuItem item = new Menu.MenuItem(itemSeq.incrementAndGet(), nombre, precio, descripcion, categoria, disponible);
-        items.add(item);
-        return item;
+    public MenuItem addItem(String nombre, BigDecimal precio, String descripcion, 
+                           MenuCategoria categoria, boolean disponible) {
+        MenuItem item = new MenuItem();
+        item.setNombre(nombre);
+        item.setPrecio(precio);
+        item.setDescripcion(descripcion);
+        item.setCategoria(categoria);
+        item.setDisponible(disponible);
+        return itemRepository.save(item);
     }
 
     public boolean removeItem(Long id) {
-        return items.removeIf(i -> Objects.equals(i.getId(), id));
+        if (itemRepository.existsById(id)) {
+            itemRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
-    public Optional<Menu.MenuItem> findItem(Long id) { 
-        return items.stream().filter(i -> Objects.equals(i.getId(), id)).findFirst();
+    public Optional<MenuItem> findItem(Long id) {
+        return itemRepository.findById(id);
     }
 }

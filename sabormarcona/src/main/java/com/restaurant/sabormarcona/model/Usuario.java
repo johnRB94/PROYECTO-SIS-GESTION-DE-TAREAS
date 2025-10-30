@@ -1,29 +1,60 @@
 package com.restaurant.sabormarcona.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // <-- ¡IMPORTA ESTO!
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 
-// ***** LA SOLUCIÓN ESTÁ EN ESTA LÍNEA *****
-@JsonIgnoreProperties({"hibernateLazyInitializer"})
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "usuarios")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = {"password", "tareas", "incidencias"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "El username no puede estar vacío.")
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
+
+    @NotEmpty(message = "La contraseña no puede estar vacía.")
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
+
+    @NotEmpty(message = "El nombre no puede estar vacío.")
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
+
+    @Email(message = "El email debe ser válido.")
+    @NotEmpty(message = "El email no puede estar vacío.")
+    @Column(name = "email", nullable = false, unique = true, length = 100)
+    private String email;
+
+    @Column(name = "rol", length = 50)
     private String rol;
+
+    @Column(name = "activo")
+    @Builder.Default
     private boolean activo = true;
 
-    // --- El resto de tu clase permanece exactamente igual ---
+    @OneToMany(mappedBy = "trabajadorAsignado", cascade = CascadeType.ALL, orphanRemoval = false)
+    @Builder.Default
+    private List<Tarea> tareas = new ArrayList<>();
+
+    @OneToMany(mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = false)
+    @Builder.Default
+    private List<Incidencia> incidencias = new ArrayList<>();
 
     @Transient
     public String getIniciales() {
@@ -48,28 +79,4 @@ public class Usuario {
             default: return "bg-secondary";
         }
     }
-
-    public Usuario() {}
-
-    public Usuario(String username, String password, String nombre, String rol) {
-        this.username = username;
-        this.password = password;
-        this.nombre = nombre;
-        this.rol = rol;
-        this.activo = true;
-    }
-
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getRol() { return rol; }
-    public void setRol(String rol) { this.rol = rol; }
-    public boolean isActivo() { return activo; }
-    public void setActivo(boolean activo) { this.activo = activo; }
 }

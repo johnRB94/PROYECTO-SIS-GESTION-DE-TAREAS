@@ -1,69 +1,250 @@
 package com.restaurant.sabormarcona.controller;
 
+import com.restaurant.sabormarcona.exception.ResourceNotFoundException;
 import com.restaurant.sabormarcona.model.Incidencia;
+import com.restaurant.sabormarcona.model.Usuario;
 import com.restaurant.sabormarcona.service.IncidenciaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.restaurant.sabormarcona.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.Optional;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/incidencias")
+@RequiredArgsConstructor
+@Slf4j
 public class IncidenciaController {
 
-    @Autowired
-    private IncidenciaService incidenciaService;
+    private final IncidenciaService incidenciaService;
+    private final UsuarioService usuarioService;
 
+    private boolean verificarAutenticacion(HttpSession session, RedirectAttributes redirectAttributes) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+        if (usuarioLogueado == null) {
+            log.warn("Usuario no autenticado intentando acceder a /incidencias");
+            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesión para acceder");
+            return false;
+        }
+        return true;
+    }
+
+    // LISTAR TODAS LAS INCIDENCIAS
     @GetMapping
-    public String listarIncidencias(Model model) {
-        model.addAttribute("incidencias", incidenciaService.obtenerTodasLasIncidencias());
-        return "vista/incidencia"; 
-    }
-    
-    @GetMapping("/obtener/{id}")
-    @ResponseBody
-    public Optional<Incidencia> obtenerIncidenciaJson(@PathVariable Long id) {
-        return incidenciaService.obtenerIncidenciaPorId(id);
-    }
-    
-    @PostMapping("/registrar")
-    public String registrarIncidencia(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
-        try {
-            incidenciaService.guardarNuevaIncidencia(incidencia);
-            redirectAttributes.addFlashAttribute("mensaje", "Incidencia registrada exitosamente.");
-            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensaje", "Error al registrar la incidencia: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+    public String listarIncidencias(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        log.debug("GET /incidencias - Listando todas las incidencias");
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
         }
-        return "redirect:/incidencias";
+
+        try {
+            List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
+            model.addAttribute("incidencias", incidencias);
+
+            long totalIncidencias = incidencias.size();
+            model.addAttribute("totalIncidencias", totalIncidencias);
+
+            return "vista/incidencia";
+
+        } catch (Exception e) {
+            log.error("Error al listar incidencias", e);
+            model.addAttribute("mensaje", "Error al cargar las incidencias");
+            model.addAttribute("tipoMensaje", "danger");
+            return "vista/incidencia";
+        }
     }
 
-    @PostMapping("/actualizar")
-    public String actualizarIncidencia(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
-        try {
-            Incidencia incidenciaActualizada = incidenciaService.modificarIncidencia(incidencia);
-            redirectAttributes.addFlashAttribute("mensaje", "Incidencia actualizada exitosamente.");
-            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensaje", "Error al actualizar la incidencia: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
+    // VER DETALLE DE INCIDENCIA
+    @GetMapping("/{id}")
+    public String verDetalleIncidencia(@PathVariable Long id, Model model, HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        log.debug("GET /incidencias/{} - Ver detalle de incidencia", id);
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
         }
-        return "redirect:/incidencias";
+
+        try {
+            Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
+            model.addAttribute("incidencia", incidencia);
+            return "vista/incidencia-detalle";
+        } catch (ResourceNotFoundException e) {
+            log.warn("Incidencia no encontrada: {}", id);
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia no encontrada");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+            return "redirect:/incidencias";
+        }
     }
-    
-    @PostMapping("/eliminar/{id}")
-    public String eliminarIncidencia(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+
+    // FORMULARIO NUEVA INCIDENCIA
+    @GetMapping("/nueva")
+    public String mostrarFormularioNuevaIncidencia(Model model, HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        log.debug("GET /incidencias/nueva - Mostrar formulario de nueva incidencia");
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("incidencia", new Incidencia());
+        model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
+        model.addAttribute("accion", "Crear");
+        return "vista/incidencia-formulario";
+    }
+
+    // CREAR INCIDENCIA
+    @PostMapping
+    public String crearIncidencia(@Valid @ModelAttribute("incidencia") Incidencia incidencia,
+            BindingResult result,
+            Model model,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        log.debug("POST /incidencias - Creando nueva incidencia: {}", incidencia.getTitulo());
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
+        }
+
+        if (result.hasErrors()) {
+            log.warn("Errores de validación al crear incidencia: {}", result.getAllErrors());
+            model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
+            model.addAttribute("accion", "Crear");
+            return "vista/incidencia-formulario";
+        }
+
+        try {
+            if (incidencia.getTrabajador() != null && incidencia.getTrabajador().getId() != null) {
+                Usuario trabajador = usuarioService.findById(incidencia.getTrabajador().getId());
+                incidencia.setTrabajador(trabajador);
+            }
+
+            Incidencia incidenciaGuardada = incidenciaService.guardarNuevaIncidencia(incidencia);
+            log.info("Incidencia creada exitosamente con ID: {}", incidenciaGuardada.getId());
+
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia creada exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/incidencias";
+
+        } catch (Exception e) {
+            log.error("Error al crear incidencia", e);
+            model.addAttribute("mensaje", "Error al crear la incidencia: " + e.getMessage());
+            model.addAttribute("tipoMensaje", "danger");
+            model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
+            model.addAttribute("accion", "Crear");
+            return "vista/incidencia-formulario";
+        }
+    }
+
+    // FORMULARIO EDITAR INCIDENCIA
+    @GetMapping("/{id}/editar")
+    public String mostrarFormularioEditarIncidencia(@PathVariable Long id, Model model, HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        log.debug("GET /incidencias/{}/editar - Mostrar formulario de edición", id);
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
+        }
+
+        try {
+            Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
+            model.addAttribute("incidencia", incidencia);
+            model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
+            model.addAttribute("accion", "Editar");
+            return "vista/incidencia-formulario";
+
+        } catch (ResourceNotFoundException e) {
+            log.warn("Incidencia no encontrada para editar: {}", id);
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia no encontrada");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+            return "redirect:/incidencias";
+        }
+    }
+
+    // ACTUALIZAR INCIDENCIA
+    @PostMapping("/{id}/editar")
+    public String actualizarIncidencia(@PathVariable Long id,
+            @Valid @ModelAttribute("incidencia") Incidencia incidencia,
+            BindingResult result,
+            Model model,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        log.debug("POST /incidencias/{}/editar - Actualizando incidencia", id);
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
+        }
+
+        if (result.hasErrors()) {
+            log.warn("Errores de validación al actualizar incidencia: {}", result.getAllErrors());
+            model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
+            model.addAttribute("accion", "Editar");
+            return "vista/incidencia-formulario";
+        }
+
+        try {
+            incidencia.setId(id);
+
+            if (incidencia.getTrabajador() != null && incidencia.getTrabajador().getId() != null) {
+                Usuario trabajador = usuarioService.findById(incidencia.getTrabajador().getId());
+                incidencia.setTrabajador(trabajador);
+            }
+
+            incidenciaService.modificarIncidencia(incidencia);
+            log.info("Incidencia actualizada exitosamente: {}", id);
+
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia actualizada exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/incidencias";
+
+        } catch (ResourceNotFoundException e) {
+            log.warn("Incidencia no encontrada al actualizar: {}", id);
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia no encontrada");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
+            return "redirect:/incidencias";
+        } catch (Exception e) {
+            log.error("Error al actualizar incidencia", e);
+            model.addAttribute("mensaje", "Error al actualizar la incidencia: " + e.getMessage());
+            model.addAttribute("tipoMensaje", "danger");
+            model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
+            model.addAttribute("accion", "Editar");
+            return "vista/incidencia-formulario"; 
+        }
+    }
+
+    // ELIMINAR INCIDENCIA
+    @PostMapping("/{id}/eliminar")
+    public String eliminarIncidencia(@PathVariable Long id, HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        log.debug("POST /incidencias/{}/eliminar - Eliminando incidencia", id);
+
+        if (!verificarAutenticacion(session, redirectAttributes)) {
+            return "redirect:/";
+        }
+
         try {
             incidenciaService.eliminarIncidencia(id);
-            redirectAttributes.addFlashAttribute("mensaje", "Incidencia eliminada exitosamente.");
+            log.info("Incidencia eliminada exitosamente: {}", id);
+
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia eliminada exitosamente");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+        } catch (ResourceNotFoundException e) {
+            log.warn("Incidencia no encontrada al eliminar: {}", id);
+            redirectAttributes.addFlashAttribute("mensaje", "Incidencia no encontrada");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "warning");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensaje", "Error al eliminar la incidencia: " + e.getMessage());
+            log.error("Error al eliminar incidencia", e);
+            redirectAttributes.addFlashAttribute("mensaje", "Error al eliminar la incidencia");
             redirectAttributes.addFlashAttribute("tipoMensaje", "danger");
         }
+
         return "redirect:/incidencias";
     }
 }

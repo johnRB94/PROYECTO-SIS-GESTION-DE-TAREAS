@@ -6,19 +6,28 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid ps-3">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img th:src="@{/img/logo.png}" alt="Logo Sabor de Marcona" 
-                     width="72" height="72" class="rounded-circle border border-2 border-white object-fit-cover me-2">
+                <img th:src="@{/img/logo.png}" 
+                     alt="Logo Sabor de Marcona" 
+                     width="72" 
+                     height="72"
+                     class="rounded-circle border border-2 border-white object-fit-cover me-2">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
-                    aria-expanded="false" aria-label="Alternar navegación">
+            <button class="navbar-toggler" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" 
+                    aria-expanded="false" 
+                    aria-label="Alternar navegación">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item me-lg-2 mb-2 mb-lg-0">
-                        <button class="btn btn-outline-light active" aria-current="page" 
-                                data-bs-toggle="modal" data-bs-target="#modalInicio">
+                        <button class="btn btn-outline-light active" 
+                                aria-current="page" 
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalInicio">
                             <i class="fa-solid fa-house me-2"></i>Inicio
                         </button>
                     </li>
@@ -36,7 +45,9 @@
                     <div id="blog-carousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img th:src="@{/img/carousel-1.png}" alt="La esencia del Perú" class="w-100">
+                                <img th:src="@{/img/carousel-1.png}" 
+                                     alt="La esencia del Perú" 
+                                     class="w-100">
                                 <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                     <h2 class="fw-medium mb-1 text-light">La esencia del Perú</h2>
                                     <h1 class="display-1 fw-bold text-danger mb-1">Sabor de Marcona</h1>
@@ -44,7 +55,9 @@
                                 </div>
                             </div>
                             <div class="carousel-item">
-                                <img th:src="@{/img/carousel-2.png}" alt="Menú peruano criollo" class="w-100">
+                                <img th:src="@{/img/carousel-2.png}" 
+                                     alt="Menú peruano criollo" 
+                                     class="w-100">
                                 <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                     <h2 class="fw-medium mb-1 text-light">Sabores que unen tradición y pasión</h2>
                                     <h1 class="display-1 fw-bold text-danger mb-1">Menú Peruano Criollo</h1>
@@ -53,11 +66,17 @@
                             </div>
                         </div>
                         <!-- Controles -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#blog-carousel" data-bs-slide="prev">
+                        <button class="carousel-control-prev" 
+                                type="button" 
+                                data-bs-target="#blog-carousel"
+                                data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Anterior</span>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#blog-carousel" data-bs-slide="next">
+                        <button class="carousel-control-next" 
+                                type="button" 
+                                data-bs-target="#blog-carousel"
+                                data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Siguiente</span>
                         </button>
@@ -68,11 +87,20 @@
     </main>
 
     <!-- Modal de Login -->
-    <div class="modal fade" id="modalInicio" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" 
+         id="modalInicio" 
+         tabindex="-1" 
+         aria-labelledby="modalInicioLabel"
+         aria-hidden="true"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content bg-dark text-white">
                 <div class="modal-header border-0 justify-content-end">
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">
+                    <button type="button" 
+                            class="btn btn-danger btn-sm" 
+                            data-bs-dismiss="modal"
+                            id="btnCerrarModal">
                         <i class="fa-solid fa-right-from-bracket"></i> Salir
                     </button>
                 </div>
@@ -80,7 +108,9 @@
                     <div class="container-fluid">
                         <div class="row g-4 align-items-center">
                             <div class="col-md-5 text-center">
-                                <img th:src="@{/img/logo.png}" alt="Logo" class="rounded-circle bg-white p-2" 
+                                <img th:src="@{/img/logo.png}" 
+                                     alt="Logo" 
+                                     class="rounded-circle bg-white p-2"
                                      style="width: 180px; height: 180px; object-fit: cover;">
                             </div>
                             <div class="col-md-7">
@@ -88,26 +118,77 @@
                                     <h5 class="bg-warning-subtle text-dark fw-bold text-center rounded-2 py-2 mb-4">
                                         <i class="fa-solid fa-user-tie me-2"></i>BIENVENIDO
                                     </h5>
-                                    <form th:action="@{/login}" method="post">
+
+                                    <!-- Mostrar mensaje de error si existe -->
+                                    <div th:if="${error}" 
+                                         class="alert alert-danger alert-dismissible fade show"
+                                         role="alert"
+                                         id="alertError">
+                                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                        <strong>Error:</strong> <span th:text="${error}"></span>
+                                        <button type="button" 
+                                                class="btn-close" 
+                                                data-bs-dismiss="alert"
+                                                aria-label="Cerrar"></button>
+                                    </div>
+
+                                    <!-- Mostrar mensaje informativo si existe -->
+                                    <div th:if="${mensaje}" 
+                                         class="alert alert-info alert-dismissible fade show"
+                                         role="alert"
+                                         id="alertInfo">
+                                        <i class="fa-solid fa-info-circle me-2"></i>
+                                        <span th:text="${mensaje}"></span>
+                                        <button type="button" 
+                                                class="btn-close" 
+                                                data-bs-dismiss="alert"
+                                                aria-label="Cerrar"></button>
+                                    </div>
+
+                                    <form id="formLogin" 
+                                          th:action="@{/login}" 
+                                          method="post"
+                                          novalidate>
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold" for="username">
                                                 <i class="fa-solid fa-user me-2"></i>USUARIO
                                             </label>
-                                            <input id="username" name="username" type="text" class="form-control" required>
+                                            <input id="username" 
+                                                   name="username" 
+                                                   type="text" 
+                                                   class="form-control"
+                                                   required 
+                                                   placeholder="Ingrese su usuario" 
+                                                   th:value="${username}"
+                                                   autocomplete="off">
+                                            <div class="invalid-feedback">
+                                                El usuario es obligatorio.
+                                            </div>
                                         </div>
+
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold" for="password">
                                                 <i class="fa-solid fa-lock me-2"></i>CONTRASEÑA
                                             </label>
-                                            <input id="password" name="password" type="password" class="form-control" required>
+                                            <input id="password" 
+                                                   name="password" 
+                                                   type="password" 
+                                                   class="form-control"
+                                                   required 
+                                                   placeholder="Ingrese su contraseña"
+                                                   autocomplete="off">
+                                            <div class="invalid-feedback">
+                                                La contraseña es obligatoria.
+                                            </div>
                                         </div>
-                                        <!-- Mostrar mensaje de error si existe -->
-                                        <div th:if="${error}" class="alert alert-danger" role="alert">
-                                            <span th:text="${error}"></span>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" 
+                                                    class="btn btn-light text-dark fw-bold"
+                                                    id="btnIngresar">
+                                                <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>INGRESAR
+                                            </button>
                                         </div>
-                                        <button type="submit" class="btn btn-light text-dark fw-bold w-100">
-                                            <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>INGRESAR
-                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -118,9 +199,73 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <div th:replace="~{componentes/footer.html}"></div>
-    
-   
+
+    <!-- ========================================
+         JAVASCRIPT PARA MANEJAR EL MODAL
+         ======================================== -->
+    <script th:inline="javascript">
+        // Variables de Thymeleaf
+        const tieneError = /*[[${error != null}]]*/ false;
+        const tieneMensaje = /*[[${mensaje != null}]]*/ false;
+        const username = /*[[${username}]]*/ '';
+
+        // Instancia del modal
+        const modalElement = document.getElementById('modalInicio');
+        const modal = new bootstrap.Modal(modalElement, {
+            keyboard: false,
+            backdrop: 'static'
+        });
+
+        /**
+         * Al cargar el documento, mostrar modal si hay error
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Si hay error o mensaje, mostrar el modal
+            if (tieneError || tieneMensaje) {
+                // Rellenar el campo de usuario si existe
+                if (username) {
+                    document.getElementById('username').value = username;
+                    document.getElementById('password').focus();
+                }
+
+                // Mostrar modal
+                modal.show();
+            }
+        });
+
+        /**
+         * Validar formulario antes de enviar
+         */
+        const formLogin = document.getElementById('formLogin');
+        formLogin.addEventListener('submit', function(event) {
+            if (!this.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        }, false);
+
+        /**
+         * Limpiar formulario cuando se cierra el modal
+         */
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            // Solo limpiar si NO hay error o mensaje
+            if (!tieneError && !tieneMensaje) {
+                formLogin.reset();
+                formLogin.classList.remove('was-validated');
+            }
+        });
+
+        /**
+         * Permitir cerrar modal solo si no hay errores
+         */
+        document.getElementById('btnCerrarModal').addEventListener('click', function(e) {
+            if (tieneError) {
+                e.preventDefault();
+                alert('Por favor, corrija los errores antes de cerrar.');
+            }
+        });
+    </script>
 </body>
 </html>
