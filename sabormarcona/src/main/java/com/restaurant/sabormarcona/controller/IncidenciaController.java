@@ -47,10 +47,11 @@ public class IncidenciaController {
 
         try {
             List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
-            model.addAttribute("incidencias", incidencias);
+            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
 
-            long totalIncidencias = incidencias.size();
-            model.addAttribute("totalIncidencias", totalIncidencias);
+            model.addAttribute("incidencias", incidencias);
+            model.addAttribute("trabajadores", trabajadores);
+            model.addAttribute("totalIncidencias", incidencias.size());
 
             return "vista/incidencia";
 
@@ -121,9 +122,10 @@ public class IncidenciaController {
         }
 
         try {
+            // El trabajador asignado viene del formulario (seleccionado por el usuario)
             if (incidencia.getTrabajador() != null && incidencia.getTrabajador().getId() != null) {
-                Usuario trabajador = usuarioService.findById(incidencia.getTrabajador().getId());
-                incidencia.setTrabajador(trabajador);
+                Usuario trabajadorAsignado = usuarioService.findById(incidencia.getTrabajador().getId());
+                incidencia.setTrabajador(trabajadorAsignado);
             }
 
             Incidencia incidenciaGuardada = incidenciaService.guardarNuevaIncidencia(incidencia);
@@ -192,9 +194,10 @@ public class IncidenciaController {
         try {
             incidencia.setId(id);
 
+            // El trabajador asignado viene del formulario (seleccionado por el usuario)
             if (incidencia.getTrabajador() != null && incidencia.getTrabajador().getId() != null) {
-                Usuario trabajador = usuarioService.findById(incidencia.getTrabajador().getId());
-                incidencia.setTrabajador(trabajador);
+                Usuario trabajadorAsignado = usuarioService.findById(incidencia.getTrabajador().getId());
+                incidencia.setTrabajador(trabajadorAsignado);
             }
 
             incidenciaService.modificarIncidencia(incidencia);
@@ -215,7 +218,7 @@ public class IncidenciaController {
             model.addAttribute("tipoMensaje", "danger");
             model.addAttribute("trabajadores", usuarioService.obtenerUsuariosActivos());
             model.addAttribute("accion", "Editar");
-            return "vista/incidencia-formulario"; 
+            return "vista/incidencia-formulario";
         }
     }
 

@@ -1,22 +1,27 @@
-.navbar-nav .nav-item .nav-link.active {
-    color: #FFD700 !important; 
-    background-color: transparent !important; 
+/* Estilos para el navbar activo */
+.navbar-nav .nav-link.active {
+    color: #ffc107 !important;
+    /* Amarillo */
+    font-weight: bold;
 }
 
-html, body {
-    height: 100%;
+.navbar-nav .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #ffc107;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
+/* Efecto hover opcional */
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+    transition: color 0.3s ease;
 }
 
-main {
-    flex: 1 0 auto;
-}
-
-footer {
-    flex-shrink: 0;
+/* Posición relativa para el pseudo-elemento */
+.navbar-nav .nav-link {
+    position: relative;
 }

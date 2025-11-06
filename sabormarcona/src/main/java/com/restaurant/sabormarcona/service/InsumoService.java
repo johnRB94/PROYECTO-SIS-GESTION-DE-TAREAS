@@ -44,6 +44,10 @@ public class InsumoService {
     @Transactional(readOnly = true)
     public Insumo obtenerInsumoPorId(Long id) {
         log.debug("Buscando insumo con ID: {}", id);
+        if (id == null) {
+            log.warn("ID de insumo es null");
+            throw new IllegalArgumentException("El ID del insumo no puede ser null");
+        }
         return insumoRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Insumo no encontrado con ID: {}", id);
@@ -67,6 +71,11 @@ public class InsumoService {
     public Insumo actualizarInsumo(Insumo insumoActualizado) {
         log.debug("Actualizando insumo con ID: {}", insumoActualizado.getId());
 
+        if (insumoActualizado.getId() == null) {
+            log.warn("ID de insumo es null al intentar actualizar");
+            throw new IllegalArgumentException("El ID del insumo no puede ser null");
+        }
+
         Insumo insumoExistente = obtenerInsumoPorId(insumoActualizado.getId());
 
         if (!insumoExistente.getNombre().equals(insumoActualizado.getNombre())) {
@@ -87,6 +96,11 @@ public class InsumoService {
     public void incrementarStock(Long id, Integer cantidad) {
         log.debug("Incrementando stock del insumo ID: {} en {} unidades", id, cantidad);
 
+        if (id == null) {
+            log.warn("ID de insumo es null al intentar incrementar stock");
+            throw new IllegalArgumentException("El ID del insumo no puede ser null");
+        }
+
         if (cantidad == null || cantidad <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
         }
@@ -102,6 +116,11 @@ public class InsumoService {
 
     public void decrementarStock(Long id, Integer cantidad) {
         log.debug("Decrementando stock del insumo ID: {} en {} unidades", id, cantidad);
+
+        if (id == null) {
+            log.warn("ID de insumo es null al intentar decrementar stock");
+            throw new IllegalArgumentException("El ID del insumo no puede ser null");
+        }
 
         if (cantidad == null || cantidad <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
@@ -126,6 +145,11 @@ public class InsumoService {
     public void actualizarStock(Long id, Integer nuevoStock) {
         log.debug("Actualizando stock del insumo ID: {} a {}", id, nuevoStock);
 
+        if (id == null) {
+            log.warn("ID de insumo es null al intentar actualizar stock");
+            throw new IllegalArgumentException("El ID del insumo no puede ser null");
+        }
+
         if (nuevoStock == null || nuevoStock < 0) {
             throw new IllegalArgumentException("El stock no puede ser negativo");
         }
@@ -142,6 +166,11 @@ public class InsumoService {
     // DELETE
     public void eliminarInsumo(Long id) {
         log.debug("Eliminando insumo con ID: {}", id);
+
+        if (id == null) {
+            log.warn("ID de insumo es null al intentar eliminar");
+            throw new IllegalArgumentException("El ID del insumo no puede ser null");
+        }
 
         if (!insumoRepository.existsById(id)) {
             log.warn("Intento de eliminar insumo inexistente con ID: {}", id);

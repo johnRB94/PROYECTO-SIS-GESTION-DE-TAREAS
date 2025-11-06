@@ -44,6 +44,10 @@ public class TareaService {
     @Transactional(readOnly = true)
     public Tarea obtenerTareaPorId(Long id) {
         log.debug("Buscando tarea con ID: {}", id);
+        if (id == null) {
+            log.warn("ID de tarea es null");
+            throw new IllegalArgumentException("El ID de la tarea no puede ser null");
+        }
         return tareaRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Tarea no encontrada con ID: {}", id);
@@ -67,6 +71,11 @@ public class TareaService {
     public Tarea modificarTarea(Tarea tareaModificada) {
         log.debug("Modificando tarea con ID: {}", tareaModificada.getId());
 
+        if (tareaModificada.getId() == null) {
+            log.warn("ID de tarea es null al intentar modificar");
+            throw new IllegalArgumentException("El ID de la tarea no puede ser null");
+        }
+
         Tarea tareaExistente = obtenerTareaPorId(tareaModificada.getId());
 
         tareaExistente.setTitulo(tareaModificada.getTitulo());
@@ -84,6 +93,11 @@ public class TareaService {
     public Tarea cambiarEstado(Long id, TaskStatus nuevoEstado) {
         log.debug("Cambiando estado de tarea ID: {} a {}", id, nuevoEstado);
 
+        if (id == null) {
+            log.warn("ID de tarea es null al intentar cambiar estado");
+            throw new IllegalArgumentException("El ID de la tarea no puede ser null");
+        }
+
         Tarea tarea = obtenerTareaPorId(id);
         tarea.setEstado(nuevoEstado);
 
@@ -93,6 +107,11 @@ public class TareaService {
     // DELETE
     public void eliminarTarea(Long id) {
         log.debug("Eliminando tarea con ID: {}", id);
+
+        if (id == null) {
+            log.warn("ID de tarea es null al intentar eliminar");
+            throw new IllegalArgumentException("El ID de la tarea no puede ser null");
+        }
 
         if (!tareaRepository.existsById(id)) {
             log.warn("Intento de eliminar tarea inexistente con ID: {}", id);

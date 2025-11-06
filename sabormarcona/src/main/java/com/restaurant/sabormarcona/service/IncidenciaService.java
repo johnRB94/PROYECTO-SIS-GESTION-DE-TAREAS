@@ -50,6 +50,10 @@ public class IncidenciaService {
     @Transactional(readOnly = true)
     public Incidencia obtenerIncidenciaPorId(Long id) {
         log.debug("Buscando incidencia con ID: {}", id);
+        if (id == null) {
+            log.warn("ID de incidencia es null");
+            throw new IllegalArgumentException("El ID de la incidencia no puede ser null");
+        }
         return incidenciaRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Incidencia no encontrada con ID: {}", id);
@@ -73,6 +77,11 @@ public class IncidenciaService {
     public Incidencia modificarIncidencia(Incidencia incidenciaModificada) {
         log.debug("Modificando incidencia con ID: {}", incidenciaModificada.getId());
 
+        if (incidenciaModificada.getId() == null) {
+            log.warn("ID de incidencia es null al intentar modificar");
+            throw new IllegalArgumentException("El ID de la incidencia no puede ser null");
+        }
+
         Incidencia incidenciaExistente = obtenerIncidenciaPorId(incidenciaModificada.getId());
 
         incidenciaExistente.setTitulo(incidenciaModificada.getTitulo());
@@ -93,6 +102,11 @@ public class IncidenciaService {
     public Incidencia cambiarEstado(Long id, String nuevoEstado) {
         log.debug("Cambiando estado de incidencia ID: {} a {}", id, nuevoEstado);
 
+        if (id == null) {
+            log.warn("ID de incidencia es null al intentar cambiar estado");
+            throw new IllegalArgumentException("El ID de la incidencia no puede ser null");
+        }
+
         Incidencia incidencia = obtenerIncidenciaPorId(id);
         incidencia.setEstado(nuevoEstado);
 
@@ -102,6 +116,11 @@ public class IncidenciaService {
     // DELETE
     public void eliminarIncidencia(Long id) {
         log.debug("Eliminando incidencia con ID: {}", id);
+
+        if (id == null) {
+            log.warn("ID de incidencia es null al intentar eliminar");
+            throw new IllegalArgumentException("El ID de la incidencia no puede ser null");
+        }
 
         if (!incidenciaRepository.existsById(id)) {
             log.warn("Intento de eliminar incidencia inexistente con ID: {}", id);

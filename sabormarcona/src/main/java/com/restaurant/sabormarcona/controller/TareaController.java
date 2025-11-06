@@ -40,6 +40,14 @@ public class TareaController {
         return true;
     }
 
+    // MÉTODO AUXILIAR: Filtrar trabajadores sin administradores
+    private List<Usuario> obtenerTrabajadoresParaAsignacion() {
+        return usuarioService.obtenerUsuariosActivos()
+                .stream()
+                .filter(u -> !u.getRol().equalsIgnoreCase("Administrador"))
+                .toList();
+    }
+
     // LISTAR TODAS LAS TAREAS
     @GetMapping
     public String listarTareas(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
@@ -53,8 +61,8 @@ public class TareaController {
             List<Tarea> tareas = tareaService.obtenerTodasLasTareas();
             log.info("Tareas obtenidas: {}", tareas.size());
 
-            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
-            log.info("Trabajadores activos encontrados: {}", trabajadores.size());
+            List<Usuario> trabajadores = obtenerTrabajadoresParaAsignacion();
+            log.info("Trabajadores activos (sin administradores): {}", trabajadores.size());
 
             long pendientes = tareaService.contarTareasPorEstado(TaskStatus.PENDIENTE);
             long enProgreso = tareaService.contarTareasPorEstado(TaskStatus.EN_PROGRESO);
@@ -102,7 +110,7 @@ public class TareaController {
                     .findFirst()
                     .orElse("Por favor completa todos los campos requeridos correctamente");
 
-            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
+            List<Usuario> trabajadores = obtenerTrabajadoresParaAsignacion();
 
             model.addAttribute("tarea", tarea);
             model.addAttribute("mensaje", "Error de validación: " + errorMessage);
@@ -116,7 +124,7 @@ public class TareaController {
         if (tarea.getPrioridad() == null || tarea.getPrioridad().isEmpty()) {
             log.warn("Prioridad no seleccionada");
 
-            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
+            List<Usuario> trabajadores = obtenerTrabajadoresParaAsignacion();
             model.addAttribute("tarea", tarea);
             model.addAttribute("mensaje", "Error de validación: Por favor selecciona una prioridad");
             model.addAttribute("tipoMensaje", "danger");
@@ -143,7 +151,7 @@ public class TareaController {
         } catch (Exception e) {
             log.error("Error al crear tarea", e);
 
-            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
+            List<Usuario> trabajadores = obtenerTrabajadoresParaAsignacion();
             model.addAttribute("tarea", tarea);
             model.addAttribute("mensaje", "Error al crear la tarea: " + e.getMessage());
             model.addAttribute("tipoMensaje", "danger");
@@ -170,7 +178,7 @@ public class TareaController {
 
         if (result.hasErrors()) {
             log.warn("Errores de validación al actualizar tarea: {}", result.getAllErrors());
-            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
+            List<Usuario> trabajadores = obtenerTrabajadoresParaAsignacion();
             model.addAttribute("estados", TaskStatus.values());
             model.addAttribute("trabajadores", trabajadores);
             model.addAttribute("accion", "Editar");
@@ -307,7 +315,7 @@ public class TareaController {
                 tareas = tareaService.obtenerTodasLasTareas();
             }
 
-            List<Usuario> trabajadores = usuarioService.obtenerUsuariosActivos();
+            List<Usuario> trabajadores = obtenerTrabajadoresParaAsignacion();
 
             model.addAttribute("tareas", tareas);
             model.addAttribute("trabajadores", trabajadores);

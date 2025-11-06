@@ -62,7 +62,7 @@
 
                         <td th:text="${#temporals.format(incidencia.fechaLimite, 'dd-MM-yyyy HH:mm')}"></td>
 
-                        <td>
+                        <td th:data-trabajador-id="${incidencia.trabajador != null ? incidencia.trabajador.id : ''}">
                             <span th:if="${incidencia.trabajador != null}"
                                 th:text="${incidencia.trabajador.nombre + ' (' + incidencia.trabajador.rol + ')'}"></span>
                             <span th:if="${incidencia.trabajador == null}" class="badge bg-secondary">No asignado</span>
@@ -154,6 +154,17 @@
                             </select>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="regTrabajador" class="form-label fw-bold">Asignar a Trabajador *</label>
+                            <select class="form-select" id="regTrabajador" name="trabajador.id" required>
+                                <option value="">-- Seleccionar trabajador --</option>
+                                <option th:each="trabajador : ${trabajadores}" 
+                                        th:value="${trabajador.id}"
+                                        th:text="${trabajador.nombre + ' (' + trabajador.rol + ')'}">
+                                </option>
+                            </select>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -222,9 +233,17 @@
                             </select>
                         </div>
 
-                        <div class="alert alert-secondary p-2 mt-3">
-                            <p class="mb-0">Asignado a: <strong id="editWorkerInfo">-</strong></p>
+                        <div class="mb-3">
+                            <label for="editTrabajador" class="form-label fw-bold">Asignar a Trabajador *</label>
+                            <select class="form-select" id="editTrabajador" name="trabajador.id" required>
+                                <option value="">-- Seleccionar trabajador --</option>
+                                <option th:each="trabajador : ${trabajadores}" 
+                                        th:value="${trabajador.id}"
+                                        th:text="${trabajador.nombre + ' (' + trabajador.rol + ')'}">
+                                </option>
+                            </select>
                         </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -252,6 +271,9 @@
             filas.forEach(fila => {
                 const idCell = fila.querySelector('td:first-child');
                 if (idCell && parseInt(idCell.textContent) === incidenciaId) {
+                    const trabajadorCell = fila.children[6];
+                    const trabajadorId = trabajadorCell.getAttribute('data-trabajador-id');
+                    
                     datosIncidencia = {
                         id: idCell.textContent,
                         titulo: fila.children[1].textContent,
@@ -259,7 +281,8 @@
                         prioridad: fila.children[3].textContent.trim(),
                         estado: fila.children[4].textContent.trim(),
                         fechaLimite: fila.children[5].textContent,
-                        trabajador: fila.children[6].textContent
+                        trabajador: fila.children[6].textContent,
+                        trabajadorId: trabajadorId
                     };
                 }
             });
@@ -280,7 +303,9 @@
                     document.getElementById('editFechaLimite').value = fechaFormato;
                 }
 
-                document.getElementById('editWorkerInfo').textContent = datosIncidencia.trabajador || 'No asignado';
+                if (datosIncidencia.trabajadorId) {
+                    document.getElementById('editTrabajador').value = datosIncidencia.trabajadorId;
+                }
 
                 console.log('Incidencia cargada:', datosIncidencia);
             } else {
@@ -319,7 +344,6 @@
             if (modalEditar) {
                 modalEditar.addEventListener('hidden.bs.modal', function () {
                     document.getElementById('editIncidenciaForm').reset();
-                    document.getElementById('editWorkerInfo').textContent = '-';
                 });
             }
 
@@ -330,6 +354,7 @@
                     const fechaLimite = document.getElementById('regFechaLimite').value;
                     const prioridad = document.getElementById('regPrioridad').value;
                     const estado = document.getElementById('regEstado').value;
+                    const trabajador = document.getElementById('regTrabajador').value;
 
                     if (!titulo) {
                         e.preventDefault();
@@ -352,6 +377,12 @@
                     if (!estado) {
                         e.preventDefault();
                         alert('Por favor selecciona un estado');
+                        return false;
+                    }
+
+                    if (!trabajador) {
+                        e.preventDefault();
+                        alert('Por favor selecciona un trabajador');
                         return false;
                     }
                 });
@@ -364,6 +395,7 @@
                     const fechaLimite = document.getElementById('editFechaLimite').value;
                     const prioridad = document.getElementById('editPrioridad').value;
                     const estado = document.getElementById('editEstado').value;
+                    const trabajador = document.getElementById('editTrabajador').value;
 
                     if (!titulo) {
                         e.preventDefault();
@@ -386,6 +418,12 @@
                     if (!estado) {
                         e.preventDefault();
                         alert('Por favor selecciona un estado');
+                        return false;
+                    }
+
+                    if (!trabajador) {
+                        e.preventDefault();
+                        alert('Por favor selecciona un trabajador');
                         return false;
                     }
                 });

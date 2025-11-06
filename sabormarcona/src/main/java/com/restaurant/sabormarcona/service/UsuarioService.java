@@ -51,6 +51,10 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Usuario findById(Long id) {
         log.debug("Buscando usuario con ID: {}", id);
+        if (id == null) {
+            log.warn("ID de usuario es null");
+            throw new IllegalArgumentException("El ID del usuario no puede ser null");
+        }
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Usuario no encontrado con ID: {}", id);
@@ -79,6 +83,11 @@ public class UsuarioService {
     // UPDATE
     public Usuario actualizarUsuario(Long id, Usuario usuarioActualizado) {
         log.debug("Actualizando usuario con ID: {}", id);
+
+        if (id == null) {
+            log.warn("ID de usuario es null al intentar actualizar");
+            throw new IllegalArgumentException("El ID del usuario no puede ser null");
+        }
 
         Usuario usuarioExistente = findById(id);
 
@@ -114,6 +123,11 @@ public class UsuarioService {
     public Usuario cambiarEstado(Long id, boolean activo) {
         log.debug("Cambiando estado de usuario ID: {} a {}", id, activo);
 
+        if (id == null) {
+            log.warn("ID de usuario es null al intentar cambiar estado");
+            throw new IllegalArgumentException("El ID del usuario no puede ser null");
+        }
+
         Usuario usuario = findById(id);
         usuario.setActivo(activo);
 
@@ -123,6 +137,11 @@ public class UsuarioService {
     // DELETE
     public void eliminarUsuario(Long id) {
         log.debug("Eliminando usuario con ID: {}", id);
+
+        if (id == null) {
+            log.warn("ID de usuario es null al intentar eliminar");
+            throw new IllegalArgumentException("El ID del usuario no puede ser null");
+        }
 
         if (!usuarioRepository.existsById(id)) {
             log.warn("Intento de eliminar usuario inexistente con ID: {}", id);

@@ -11,32 +11,38 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/principal}">
+                    <a class="nav-link text-white" th:href="@{/principal}" 
+                       th:classappend="${currentPage == 'principal' ? 'active' : ''}">
                         <i class="fa-solid fa-house me-2"></i>Principal
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/nuevo}">
+                    <a class="nav-link text-white" th:href="@{/nuevo}"
+                       th:classappend="${currentPage == 'nuevo' ? 'active' : ''}">
                         <i class="fa-solid fa-user-plus me-2"></i>Empleado Nuevo
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/tareas}">
+                    <a class="nav-link text-white" th:href="@{/tareas}"
+                       th:classappend="${currentPage == 'tareas' ? 'active' : ''}">
                         <i class="fa-solid fa-list me-2"></i>Tareas
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/incidencias}">
+                    <a class="nav-link text-white" th:href="@{/incidencias}"
+                       th:classappend="${currentPage == 'incidencias' ? 'active' : ''}">
                         <i class="fa-solid fa-clipboard-list me-2"></i>Incidencias
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/menu}">
+                    <a class="nav-link text-white" th:href="@{/menu}"
+                       th:classappend="${currentPage == 'menu' ? 'active' : ''}">
                         <i class="fa-solid fa-cogs me-2"></i>Gestión de Menú
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" th:href="@{/insumos}">
+                    <a class="nav-link text-white" th:href="@{/insumos}"
+                       th:classappend="${currentPage == 'insumos' ? 'active' : ''}">
                         <i class="fa-solid fa-boxes me-2"></i>Gestión de Insumos
                     </a>
                 </li>
@@ -48,4 +54,25 @@
             </ul>
         </div>
     </div>
+
+    
+    <!-- OPCIÓN 3: JAVASCRIPT INTEGRADO PARA DETECCIÓN AUTOMÁTICA -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener la URL actual
+            const currentPath = window.location.pathname;
+            
+            // Seleccionar todos los enlaces del navbar
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                
+                // Si el enlace coincide con la URL actual, agregar clase 'active'
+                if (currentPath.includes(href) && href !== '/') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </nav>
