@@ -17,50 +17,54 @@ import java.util.Optional;
 @RequestMapping("/menu")
 public class MenuController {
     private final MenuService menuService;
-    public MenuController (MenuService menuService) { this.menuService = menuService; }
+
+    public MenuController(MenuService menuService) {
+        this.menuService = menuService;
+    }
 
     @GetMapping
-    public String listado (@RequestParam( value = "categoryId", required = false) Long categoryId,
-                           Model model,
-                           HttpSession session,
-                           HttpServletRequest request) {
+    public String listado(@RequestParam(value = "categoryId", required = false) Long categoryId,
+            Model model,
+            HttpSession session,
+            HttpServletRequest request) {
         List<MenuCategoria> categorias = menuService.findAllCategories();
-        List<MenuItem> items = (categoryId == null) ?
-                menuService.findAllItems() : menuService.findItemsByCategory(categoryId);
+        List<MenuItem> items = (categoryId == null) ? menuService.findAllItems()
+                : menuService.findItemsByCategory(categoryId);
         model.addAttribute("categorias", categorias);
         model.addAttribute("items", items);
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("currentUri", request.getRequestURI());
         return "vista/menu";
     }
-    
+
     // AGREGAR ÍTEM (POST)
     @PostMapping("/add")
-    public String agregar (@RequestParam String nombre,
-                           @RequestParam String precio,
-                           @RequestParam( required = false) String descripcion,
-                           @RequestParam Long categoriaId,
-                           @RequestParam( defaultValue = "false") boolean disponible,
-                           RedirectAttributes ra) {
+    public String agregar(@RequestParam String nombre,
+            @RequestParam String precio,
+            @RequestParam(required = false) String descripcion,
+            @RequestParam Long categoriaId,
+            @RequestParam(defaultValue = "false") boolean disponible,
+            RedirectAttributes ra) {
         if (nombre == null || nombre.trim().isEmpty()) {
             ra.addFlashAttribute("mensaje", "El nombre es obligatorio");
             ra.addFlashAttribute("tipoMensaje", "danger");
             return "redirect:/menu";
         }
         BigDecimal p;
-        try { p = new BigDecimal(precio); }
-        catch(Exception ex) {
+        try {
+            p = new BigDecimal(precio);
+        } catch (Exception ex) {
             ra.addFlashAttribute("mensaje", "Precio inválido");
             ra.addFlashAttribute("tipoMensaje", "danger");
             return "redirect:/menu";
         }
-    Optional<MenuCategoria> cat = menuService.findCategoryById(categoriaId);
+        Optional<MenuCategoria> cat = menuService.findCategoryById(categoriaId);
         if (cat.isEmpty()) {
             ra.addFlashAttribute("mensaje", "Categoría no encontrada");
             ra.addFlashAttribute("tipoMensaje", "danger");
             return "redirect:/menu";
         }
-        menuService.addItem(nombre.trim(), p, (descripcion==null? "" : descripcion.trim()), cat.get(), disponible);
+        menuService.addItem(nombre.trim(), p, (descripcion == null ? "" : descripcion.trim()), cat.get(), disponible);
         ra.addFlashAttribute("mensaje", "Platillo agregado");
         ra.addFlashAttribute("tipoMensaje", "success");
         return "redirect:/menu";
@@ -68,7 +72,7 @@ public class MenuController {
 
     // ELIMINAR ÍTEM (POST)
     @PostMapping("/delete/{id}")
-    public String eliminar (@PathVariable Long id, RedirectAttributes ra) {
+    public String eliminar(@PathVariable Long id, RedirectAttributes ra) {
         if (menuService.removeItem(id)) {
             ra.addFlashAttribute("mensaje", "Platillo eliminado");
             ra.addFlashAttribute("tipoMensaje", "info");
@@ -78,10 +82,23 @@ public class MenuController {
         }
         return "redirect:/menu";
     }
-    
+
+    // TOGGLE DISPONIBILIDAD (POST)
+    @PostMapping("/toggle/{id}")
+    public String toggleDisponibilidad(@PathVariable Long id, RedirectAttributes ra) {
+        if (menuService.toggleItemDisponibilidad(id)) {
+            ra.addFlashAttribute("mensaje", "Estado del platillo actualizado");
+            ra.addFlashAttribute("tipoMensaje", "success");
+        } else {
+            ra.addFlashAttribute("mensaje", "No se encontró el platillo");
+            ra.addFlashAttribute("tipoMensaje", "warning");
+        }
+        return "redirect:/menu";
+    }
+
     // GESTIONAR CATEGORÍAS (POST ADD)
     @PostMapping("/categories/add")
-    public String addCategoria (@RequestParam String nombre, RedirectAttributes ra) {
+    public String addCategoria(@RequestParam String nombre, RedirectAttributes ra) {
         if (nombre == null || nombre.trim().isEmpty()) {
             ra.addFlashAttribute("mensaje", "El nombre de la categoría es obligatorio");
             ra.addFlashAttribute("tipoMensaje", "danger");
@@ -95,7 +112,7 @@ public class MenuController {
 
     // GESTIONAR CATEGORÍAS (POST DELETE)
     @PostMapping("/categories/delete/{id}")
-    public String delCategoria (@PathVariable Long id, RedirectAttributes ra) {
+    public String delCategoria(@PathVariable Long id, RedirectAttributes ra) {
         if (menuService.deleteCategory(id)) {
             ra.addFlashAttribute("mensaje", "Categoría eliminada");
             ra.addFlashAttribute("tipoMensaje", "info");

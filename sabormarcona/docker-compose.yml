@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Servicio MySQL para la base de datos
+  mysql:
+    image: mysql:8.0
+    container_name: sabormarcona-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: sabormarcona_db
+      MYSQL_USER: sabormarcona_user
+      MYSQL_PASSWORD: sabormarcona_pass
+      MYSQL_INITDB_SKIP_TZINFO: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - sabormarcona-network
+
+  # Servicio de la aplicación Sabormarcona
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sabormarcona-app
+    environment:
+      # Base de Datos
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/sabormarcona_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: sabormarcona_user
+      SPRING_DATASOURCE_PASSWORD: sabormarcona_pass
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      
+      # JPA/Hibernate
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      
+      # JWT
+      APP_JWT_SECRET: "${JWT_SECRET:-MiClaveSecretaMuyLargaParaJWTAlMenos32CaracteresParaSeguridadTotal}"
+      APP_JWT_EXPIRATION_MS: 86400000
+      
+      # Logging
+      LOGGING_LEVEL_COM_RESTAURANT_SABORMARCONA: DEBUG
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
+      
+    ports:
+      - "8080:8080"
+    
+    depends_on:
+      mysql:
+        condition: service_healthy
+    
+    networks:
+      - sabormarcona-network
+    
+    restart: unless-stopped
+
+  # PhpMyAdmin para administrar MySQL (opcional)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: sabormarcona-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - sabormarcona-network
+
+volumes:
+  mysql_data:
+
+networks:
+  sabormarcona-network:
+    driver: bridge

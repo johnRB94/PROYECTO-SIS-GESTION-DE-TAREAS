@@ -1,0 +1,25 @@
+{
+  "groups": [
+    {
+      "name": "app",
+      "type": "com.restaurant.sabormarcona.config.AppProperties",
+      "sourceType": "com.restaurant.sabormarcona.config.AppProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.jwt-secret",
+      "type": "java.lang.String",
+      "description": "Clave secreta para firmar tokens JWT (mínimo 32 caracteres para HS512)",
+      "defaultValue": "MiClaveSecretaMuyLargaParaJWTAlMenos32CaracteresParaSeguridadTotal",
+      "sourceType": "com.restaurant.sabormarcona.config.AppProperties"
+    },
+    {
+      "name": "app.jwt-expiration-ms",
+      "type": "java.lang.Long",
+      "description": "Tiempo de expiración del token JWT en milisegundos (86400000 = 24 horas)",
+      "defaultValue": 86400000,
+      "sourceType": "com.restaurant.sabormarcona.config.AppProperties"
+    }
+  ]
+}

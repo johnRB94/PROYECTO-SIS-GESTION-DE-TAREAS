@@ -6,6 +6,9 @@
 <body class="bg-light d-flex flex-column min-vh-100">
     <div th:replace="~{componentes/navbar.html}"></div>
 
+    <!-- Contenedor de alertas dinámicas -->
+    <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999; width: 100%; max-width: 400px;"></div>
+
     <div class="container d-flex justify-content-center align-items-center my-5 flex-grow-1">
         <div class="row justify-content-center w-100">
             <div class="col-md-8">
@@ -55,19 +58,31 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="rol" class="form-label fw-bold">
-                                    <i class="fa-solid fa-briefcase me-1"></i>Rol del Empleado *
+                                <label for="cargo" class="form-label fw-bold">
+                                    <i class="fa-solid fa-briefcase me-1"></i>Cargo del Empleado *
                                 </label>
-                                <select class="form-select" id="rol" th:field="*{rol}" required>
-                                    <option value="" disabled selected>-- Seleccione un rol --</option>
+                                <select class="form-select" id="cargo" th:field="*{cargo}" required>
+                                    <option value="" disabled selected>-- Seleccione un cargo --</option>
                                     <option value="MESERO">Mesero/a</option>
                                     <option value="COCINERO">Cocinero/a</option>
                                     <option value="CHEF">Chef Principal</option>
                                     <option value="BARTENDER">Bartender</option>
-                                    <option value="CAJERO">Cajero/a</option>
                                     <option value="ADMINISTRADOR">Administrador</option>
                                 </select>
                                 <div class="form-text">Seleccione el puesto que ocupará</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rol" class="form-label fw-bold">
+                                    <i class="fa-solid fa-shield me-1"></i>Rol de Acceso *
+                                </label>
+                                <select class="form-select" id="rol" th:field="*{rol}" required>
+                                    <option value="" disabled selected>-- Seleccione un rol --</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user1">User1</option>
+                                    <option value="user2">User2</option>
+                                </select>
+                                <div class="form-text">Define los permisos de acceso del empleado</div>
                             </div>
 
                             <hr class="my-4">
@@ -113,6 +128,9 @@
                                 <button type="submit" class="btn btn-success btn-lg">
                                     <i class="fa-solid fa-user-plus me-2"></i>Registrar Empleado
                                 </button>
+                                <button type="button" class="btn btn-info btn-lg" data-bs-toggle="modal" data-bs-target="#modalVerUsuarios">
+                                    <i class="fa-solid fa-users me-2"></i>Ver Usuarios
+                                </button>
                                 <a th:href="@{/principal}" class="btn btn-outline-secondary">
                                     <i class="fa-solid fa-arrow-left me-2"></i>Volver al Menú Principal
                                 </a>
@@ -127,7 +145,275 @@
         </div>
     </div>
 
+    <!-- Modal para Ver y Editar Usuarios -->
+    <div class="modal fade" id="modalVerUsuarios" tabindex="-1" aria-labelledby="modalVerUsuariosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalVerUsuariosLabel">
+                        <i class="fa-solid fa-users me-2"></i>Gestión de Usuarios
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="usuariosContainer">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Usuario -->
+    <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalEditarUsuarioLabel">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>Editar Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarUsuario">
+                        <div class="mb-3">
+                            <label for="editarNombre" class="form-label fw-bold">Nombre</label>
+                            <input type="text" class="form-control" id="editarNombre" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarEmail" class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" id="editarEmail" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarCargo" class="form-label fw-bold">Cargo</label>
+                            <select class="form-select" id="editarCargo">
+                                <option value="MESERO">Mesero/a</option>
+                                <option value="COCINERO">Cocinero/a</option>
+                                <option value="CHEF">Chef Principal</option>
+                                <option value="BARTENDER">Bartender</option>
+                                <option value="ADMINISTRADOR">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarRol" class="form-label fw-bold">Rol de Acceso</label>
+                            <select class="form-select" id="editarRol">
+                                <option value="admin">Admin</option>
+                                <option value="user1">User1</option>
+                                <option value="user2">User2</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Estado</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="editarActivo">
+                                <label class="form-check-label" for="editarActivo">
+                                    <span id="labelEstado" class="badge bg-success">Activo</span>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarCambios">
+                        <i class="fa-solid fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Calcular la URL base automáticamente desde el contexto actual
+        const contextPath = window.location.pathname.split('/')[1]; // Obtiene 'sabormarcona'
+        const baseUrl = '/' + contextPath + '/usuarios';
+
+        // Función para mostrar alertas dinámicas
+        function mostrarAlerta(mensaje, tipo = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHTML = `
+                <div id="${alertId}" class="alert alert-${tipo} alert-dismissible fade show" role="alert" style="animation: slideIn 0.3s ease-in-out;">
+                    <i class="fa-solid ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} me-2"></i>
+                    <strong>${tipo === 'success' ? 'Éxito:' : 'Error:'}</strong> ${mensaje}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            alertContainer.insertAdjacentHTML('beforeend', alertHTML);
+            
+            // Auto-cerrar después de 5 segundos
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.style.animation = 'slideOut 0.3s ease-in-out';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Estilos de animación
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Referencia a los modales
+        const modalVerUsuarios = new bootstrap.Modal(document.getElementById('modalVerUsuarios'));
+        const modalEditarUsuario = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
+        let usuarioActualEnEdicion = null;
+
+        // Cargar usuarios cuando se abre el modal
+        document.getElementById('modalVerUsuarios').addEventListener('show.bs.modal', function () {
+            cargarUsuarios();
+        });
+
+        // Función para cargar usuarios
+        function cargarUsuarios() {
+            fetch(`${baseUrl}/api/usuarios`)
+                .then(response => response.json())
+                .then(usuarios => {
+                    mostrarTablaUsuarios(usuarios);
+                })
+                .catch(error => {
+                    console.error('Error al cargar usuarios:', error);
+                    document.getElementById('usuariosContainer').innerHTML = '<div class="alert alert-danger">Error al cargar los usuarios</div>';
+                });
+        }
+
+        // Función para mostrar tabla de usuarios
+        function mostrarTablaUsuarios(usuarios) {
+            let html = '<div class="table-responsive"><table class="table table-hover">';
+            html += '<thead class="table-light"><tr>';
+            html += '<th>Nombre</th><th>Email</th><th>Cargo</th><th>Rol</th><th>Estado</th><th>Acciones</th>';
+            html += '</tr></thead><tbody>';
+
+            usuarios.forEach(usuario => {
+                const estado = usuario.activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
+                html += `<tr>
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.email}</td>
+                    <td>${usuario.cargo || 'N/A'}</td>
+                    <td><span class="badge bg-secondary">${usuario.rol || 'N/A'}</span></td>
+                    <td>${estado}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="abrirEdicion(${usuario.id})">
+                            <i class="fa-solid fa-edit"></i> Editar
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            document.getElementById('usuariosContainer').innerHTML = html;
+        }
+
+        // Función para abrir modal de edición
+        function abrirEdicion(usuarioId) {
+            fetch(`${baseUrl}/api/usuarios/${usuarioId}`)
+                .then(response => response.json())
+                .then(usuario => {
+                    usuarioActualEnEdicion = usuario;
+                    document.getElementById('editarNombre').value = usuario.nombre;
+                    document.getElementById('editarEmail').value = usuario.email;
+                    document.getElementById('editarCargo').value = usuario.cargo || '';
+                    document.getElementById('editarRol').value = usuario.rol || '';
+                    document.getElementById('editarActivo').checked = usuario.activo;
+                    
+                    actualizarLabelEstado();
+                    
+                    // Cerrar modal de usuarios
+                    const bsModalVerUsuarios = bootstrap.Modal.getInstance(document.getElementById('modalVerUsuarios'));
+                    if (bsModalVerUsuarios) bsModalVerUsuarios.hide();
+                    
+                    // Abrir modal de edición
+                    modalEditarUsuario.show();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Actualizar label de estado
+        document.getElementById('editarActivo').addEventListener('change', function () {
+            actualizarLabelEstado();
+        });
+
+        function actualizarLabelEstado() {
+            const labelEstado = document.getElementById('labelEstado');
+            if (document.getElementById('editarActivo').checked) {
+                labelEstado.className = 'badge bg-success';
+                labelEstado.textContent = 'Activo';
+            } else {
+                labelEstado.className = 'badge bg-danger';
+                labelEstado.textContent = 'Inactivo';
+            }
+        }
+
+        // Guardar cambios
+        document.getElementById('btnGuardarCambios').addEventListener('click', function () {
+            if (!usuarioActualEnEdicion) return;
+
+            const datosActualizados = {
+                cargo: document.getElementById('editarCargo').value,
+                rol: document.getElementById('editarRol').value,
+                activo: document.getElementById('editarActivo').checked
+            };
+
+            fetch(`${baseUrl}/api/usuarios/${usuarioActualEnEdicion.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datosActualizados)
+            })
+            .then(response => {
+                if (response.ok) {
+                    mostrarAlerta('Usuario actualizado correctamente', 'success');
+                    modalEditarUsuario.hide();
+                    setTimeout(() => {
+                        modalVerUsuarios.show();
+                        cargarUsuarios();
+                    }, 500);
+                } else {
+                    mostrarAlerta('Error al actualizar el usuario', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarAlerta('Error al guardar los cambios', 'danger');
+            });
+        });
+
+        // Manejo de contraseña (código existente)
         document.getElementById('confirmarContrasena').addEventListener('input', function () {
             const password = document.getElementById('password').value;
             const confirmar = this.value;

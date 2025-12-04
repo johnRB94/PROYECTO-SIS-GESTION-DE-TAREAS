@@ -1,5 +1,6 @@
 package com.restaurant.sabormarcona.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -16,8 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"password", "tareas", "incidencias"})
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@ToString(exclude = { "password", "tareas", "incidencias" })
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Usuario {
 
     @Id
@@ -41,6 +42,9 @@ public class Usuario {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(name = "cargo", length = 50)
+    private String cargo;
+
     @Column(name = "rol", length = 50)
     private String rol;
 
@@ -50,33 +54,43 @@ public class Usuario {
 
     @OneToMany(mappedBy = "trabajadorAsignado", cascade = CascadeType.ALL, orphanRemoval = false)
     @Builder.Default
+    @JsonIgnore
     private List<Tarea> tareas = new ArrayList<>();
 
     @OneToMany(mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = false)
     @Builder.Default
+    @JsonIgnore
     private List<Incidencia> incidencias = new ArrayList<>();
 
     @Transient
     public String getIniciales() {
-        if (nombre == null || nombre.trim().isEmpty()) return "";
+        if (nombre == null || nombre.trim().isEmpty())
+            return "";
         String[] partes = nombre.split(" ");
         StringBuilder iniciales = new StringBuilder();
         for (String parte : partes) {
-            if (!parte.isEmpty()) iniciales.append(parte.charAt(0));
+            if (!parte.isEmpty())
+                iniciales.append(parte.charAt(0));
         }
         return iniciales.toString().toUpperCase();
     }
 
     @Transient
     public String getColorBadge() {
-        if (rol == null) return "bg-secondary";
-        switch (rol.toLowerCase()) {
-            case "chef principal": return "bg-success";
+        if (cargo == null)
+            return "bg-secondary";
+        switch (cargo.toLowerCase()) {
+            case "chef principal":
+                return "bg-success";
             case "mesera":
-            case "mesero": return "bg-warning";
-            case "cocinero": return "bg-info";
-            case "bartender": return "bg-primary";
-            default: return "bg-secondary";
+            case "mesero":
+                return "bg-warning";
+            case "cocinero":
+                return "bg-info";
+            case "bartender":
+                return "bg-primary";
+            default:
+                return "bg-secondary";
         }
     }
 }

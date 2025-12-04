@@ -44,7 +44,13 @@ public class TareaController {
     private List<Usuario> obtenerTrabajadoresParaAsignacion() {
         return usuarioService.obtenerUsuariosActivos()
                 .stream()
-                .filter(u -> !u.getRol().equalsIgnoreCase("Administrador"))
+                .filter(u -> {
+                    if (u.getRol() == null)
+                        return true;
+                    String rol = u.getRol().trim().toLowerCase();
+                    // Excluir roles administrativos: 'admin' o 'administrador'
+                    return !rol.equals("admin") && !rol.equals("administrador");
+                })
                 .toList();
     }
 
@@ -139,6 +145,9 @@ public class TareaController {
                 Usuario trabajador = usuarioService.findById(tarea.getTrabajadorAsignado().getId());
                 tarea.setTrabajadorAsignado(trabajador);
                 log.info("Tarea asignada a trabajador: {}", trabajador.getNombre());
+            } else {
+                // Asegurarse de no persistir una instancia Usuario transiente vacía
+                tarea.setTrabajadorAsignado(null);
             }
 
             Tarea tareaGuardada = tareaService.agregarTarea(tarea);

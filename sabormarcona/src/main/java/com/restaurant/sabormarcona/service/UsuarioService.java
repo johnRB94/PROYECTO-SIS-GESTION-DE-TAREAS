@@ -6,6 +6,7 @@ import com.restaurant.sabormarcona.model.Usuario;
 import com.restaurant.sabormarcona.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // CREATE
     public Usuario agregarUsuario(Usuario nuevoUsuario) {
@@ -35,6 +37,10 @@ public class UsuarioService {
             throw new DuplicateResourceException(
                     "El email '" + nuevoUsuario.getEmail() + "' ya está registrado");
         }
+
+        // Encriptar la contraseña antes de guardar
+        String passwordEncriptada = passwordEncoder.encode(nuevoUsuario.getPassword());
+        nuevoUsuario.setPassword(passwordEncriptada);
 
         Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
         log.info("Usuario creado exitosamente con ID: {}", usuarioGuardado.getId());
@@ -108,6 +114,7 @@ public class UsuarioService {
         usuarioExistente.setUsername(usuarioActualizado.getUsername());
         usuarioExistente.setNombre(usuarioActualizado.getNombre());
         usuarioExistente.setEmail(usuarioActualizado.getEmail());
+        usuarioExistente.setCargo(usuarioActualizado.getCargo());
         usuarioExistente.setRol(usuarioActualizado.getRol());
         usuarioExistente.setActivo(usuarioActualizado.isActivo());
 

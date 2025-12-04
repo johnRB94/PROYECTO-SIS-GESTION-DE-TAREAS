@@ -39,30 +39,30 @@ public class MenuService {
 
     public boolean deleteCategory(Long id) {
         log.debug("Eliminando categoría con ID: {}", id);
-        
+
         if (id == null) {
             log.warn("ID de categoría es null al intentar eliminar");
             throw new IllegalArgumentException("El ID de la categoría no puede ser null");
         }
-        
+
         if (categoriaRepository.existsById(id)) {
             categoriaRepository.deleteById(id);
             log.info("Categoría eliminada exitosamente con ID: {}", id);
             return true;
         }
-        
+
         log.warn("Intento de eliminar categoría inexistente con ID: {}", id);
         return false;
     }
 
     public Optional<MenuCategoria> findCategoryById(Long id) {
         log.debug("Buscando categoría con ID: {}", id);
-        
+
         if (id == null) {
             log.warn("ID de categoría es null al intentar buscar");
             throw new IllegalArgumentException("El ID de la categoría no puede ser null");
         }
-        
+
         return categoriaRepository.findById(id);
     }
 
@@ -74,26 +74,26 @@ public class MenuService {
 
     public List<MenuItem> findItemsByCategory(Long categoryId) {
         log.debug("Buscando items disponibles para categoryId: {}", categoryId);
-        
+
         if (categoryId == null) {
             log.debug("CategoryId es null, retornando todos los items");
             return findAllItems();
         }
-        
+
         return itemRepository.findItemsDisponiblesPorCategoria(categoryId);
     }
 
-    public MenuItem addItem(String nombre, BigDecimal precio, String descripcion, 
-                           MenuCategoria categoria, boolean disponible) {
+    public MenuItem addItem(String nombre, BigDecimal precio, String descripcion,
+            MenuCategoria categoria, boolean disponible) {
         log.debug("Agregando nuevo item: {}", nombre);
-        
+
         MenuItem item = new MenuItem();
         item.setNombre(nombre);
         item.setPrecio(precio);
         item.setDescripcion(descripcion);
         item.setCategoria(categoria);
         item.setDisponible(disponible);
-        
+
         MenuItem itemGuardado = itemRepository.save(item);
         log.info("Item creado exitosamente con ID: {}", itemGuardado.getId());
         return itemGuardado;
@@ -101,30 +101,51 @@ public class MenuService {
 
     public boolean removeItem(Long id) {
         log.debug("Eliminando item con ID: {}", id);
-        
+
         if (id == null) {
             log.warn("ID de item es null al intentar eliminar");
             throw new IllegalArgumentException("El ID del item no puede ser null");
         }
-        
+
         if (itemRepository.existsById(id)) {
             itemRepository.deleteById(id);
             log.info("Item eliminado exitosamente con ID: {}", id);
             return true;
         }
-        
+
         log.warn("Intento de eliminar item inexistente con ID: {}", id);
         return false;
     }
 
     public Optional<MenuItem> findItem(Long id) {
         log.debug("Buscando item con ID: {}", id);
-        
+
         if (id == null) {
             log.warn("ID de item es null al intentar buscar");
             throw new IllegalArgumentException("El ID del item no puede ser null");
         }
-        
+
         return itemRepository.findById(id);
+    }
+
+    public boolean toggleItemDisponibilidad(Long id) {
+        log.debug("Alternando disponibilidad del item con ID: {}", id);
+
+        if (id == null) {
+            log.warn("ID de item es null al intentar alternar disponibilidad");
+            throw new IllegalArgumentException("El ID del item no puede ser null");
+        }
+
+        Optional<MenuItem> itemOpt = itemRepository.findById(id);
+        if (itemOpt.isPresent()) {
+            MenuItem item = itemOpt.get();
+            item.setDisponible(!item.isDisponible());
+            itemRepository.save(item);
+            log.info("Disponibilidad del item {} alterada a: {}", id, item.isDisponible());
+            return true;
+        }
+
+        log.warn("Intento de alternar disponibilidad de item inexistente con ID: {}", id);
+        return false;
     }
 }

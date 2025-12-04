@@ -63,9 +63,14 @@
                 th:text="${it.disponible} ? 'Disponible' : 'No disponible'"></span>
             </td>
             <td>
+              <form th:action="@{'/menu/toggle/' + ${it.id}}" method="post" class="d-inline" title="Cambiar disponibilidad">
+                <button class="btn btn-sm btn-link p-0" type="submit" th:title="${it.disponible} ? 'Ocultar' : 'Mostrar'">
+                  <i th:class="${it.disponible} ? 'fa-solid fa-eye-slash text-warning' : 'fa-solid fa-eye text-success'"></i>
+                </button>
+              </form>
               <form th:action="@{'/menu/delete/' + ${it.id}}" method="post" class="d-inline">
-                <button class="btn btn-sm btn-outline-danger" type="submit">
-                  <i class="fa-solid fa-trash"></i> Eliminar
+                <button class="btn btn-sm btn-link p-0 text-danger" type="submit" title="Eliminar">
+                  <i class="fa-solid fa-trash"></i>
                 </button>
               </form>
             </td>

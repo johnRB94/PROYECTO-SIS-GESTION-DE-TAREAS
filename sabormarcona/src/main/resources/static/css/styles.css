@@ -2,7 +2,7 @@
 #blog-carousel,
 #blog-carousel .carousel-inner,
 #blog-carousel .carousel-item {
-  width: 100vw;
+  width: 100%;
   height: 100vh;      
   height: 100dvh;
 }

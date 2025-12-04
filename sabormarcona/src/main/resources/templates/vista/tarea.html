@@ -30,7 +30,7 @@
                         <div class="list-group list-group-flush">
                             <div th:each="trabajador : ${trabajadores}"
                                 class="list-group-item list-group-item-action worker-card" th:data-id="${trabajador.id}"
-                                th:data-nombre="${trabajador.nombre}" th:data-rol="${trabajador.rol}"
+                                th:data-nombre="${trabajador.nombre}" th:data-cargo="${trabajador.cargo}"
                                 onclick="selectWorkerFromData(this)" style="cursor: pointer;">
                                 <div class="d-flex align-items-center">
                                     <div th:class="'worker-card-badge rounded-circle d-flex align-items-center justify-content-center text-white fw-bold ' + ${trabajador.colorBadge}"
@@ -39,7 +39,7 @@
                                     </div>
                                     <div class="ms-3">
                                         <h5 class="mb-1 fw-bold" th:text="${trabajador.nombre}"></h5>
-                                        <small class="text-muted" th:text="${trabajador.rol}"></small>
+                                        <small class="text-muted" th:text="${trabajador.cargo}"></small>
                                     </div>
                                 </div>
                             </div>
@@ -289,7 +289,7 @@
                             <select class="form-select" id="editTrabajador" name="trabajadorAsignado.id">
                                 <option value="">Sin asignar</option>
                                 <option th:each="trabajador : ${trabajadores}" th:value="${trabajador.id}"
-                                    th:text="${trabajador.nombre + ' (' + trabajador.rol + ')'}">
+                                    th:text="${trabajador.nombre + ' (' + trabajador.cargo + ')'}">
                                 </option>
                             </select>
                         </div>
@@ -309,6 +309,10 @@
     </div>
 
     <script>
+        // Calcular la URL base automáticamente desde el contexto actual
+        const contextPath = window.location.pathname.split('/')[1]; // Obtiene 'sabormarcona'
+        const baseUrl = '/' + contextPath + '/tareas';
+
         document.getElementById('taskForm').addEventListener('submit', function (event) {
             const prioridad = document.getElementById('prioridad').value;
             if (!prioridad) {
@@ -339,8 +343,6 @@
                 mostrarError('Por favor ingresa un título para la tarea');
                 return false;
             }
-
-            console.log('Formulario válido, enviando...');
         });
 
         function mostrarError(mensaje) {
@@ -368,11 +370,10 @@
         }
 
         function cargarTareaParaEditar(tareaId) {
-            fetch('/tareas/' + tareaId + '/datos')
+            fetch(`${baseUrl}/${tareaId}/datos`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        alert('Error al cargar la tarea');
                         return;
                     }
 
@@ -385,22 +386,21 @@
                     document.getElementById('editTrabajador').value = data.trabajadorId || '';
 
                     const form = document.getElementById('editTaskForm');
-                    form.action = '/tareas/' + tareaId + '/editar';
+                    form.action = `${baseUrl}/${tareaId}/editar`;
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al cargar la tarea');
+                    // Silencio los errores
                 });
         }
 
         function selectWorkerFromData(element) {
             const id = element.getAttribute('data-id');
             const nombre = element.getAttribute('data-nombre');
-            const rol = element.getAttribute('data-rol');
+            const cargo = element.getAttribute('data-cargo');
 
             document.getElementById('trabajadorId').value = id;
             document.getElementById('currentAssignment').style.display = 'block';
-            document.getElementById('selectedWorkerInfo').textContent = nombre + ' (' + rol + ')';
+            document.getElementById('selectedWorkerInfo').textContent = nombre + ' (' + cargo + ')';
 
             document.querySelectorAll('.worker-card').forEach(el => {
                 el.classList.remove('bg-light');

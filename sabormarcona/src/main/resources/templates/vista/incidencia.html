@@ -64,7 +64,7 @@
 
                         <td th:data-trabajador-id="${incidencia.trabajador != null ? incidencia.trabajador.id : ''}">
                             <span th:if="${incidencia.trabajador != null}"
-                                th:text="${incidencia.trabajador.nombre + ' (' + incidencia.trabajador.rol + ')'}"></span>
+                                th:text="${incidencia.trabajador.nombre + ' (' + incidencia.trabajador.cargo + ')'}"></span>
                             <span th:if="${incidencia.trabajador == null}" class="badge bg-secondary">No asignado</span>
                         </td>
 
@@ -160,7 +160,7 @@
                                 <option value="">-- Seleccionar trabajador --</option>
                                 <option th:each="trabajador : ${trabajadores}" 
                                         th:value="${trabajador.id}"
-                                        th:text="${trabajador.nombre + ' (' + trabajador.rol + ')'}">
+                                        th:text="${trabajador.nombre + ' (' + trabajador.cargo + ')'}">
                                 </option>
                             </select>
                         </div>
@@ -239,7 +239,7 @@
                                 <option value="">-- Seleccionar trabajador --</option>
                                 <option th:each="trabajador : ${trabajadores}" 
                                         th:value="${trabajador.id}"
-                                        th:text="${trabajador.nombre + ' (' + trabajador.rol + ')'}">
+                                        th:text="${trabajador.nombre + ' (' + trabajador.cargo + ')'}">
                                 </option>
                             </select>
                         </div>
@@ -259,9 +259,13 @@
     </div>
 
     <script>
+        // Calcular la URL base automáticamente desde el contexto actual
+        const contextPath = window.location.pathname.split('/')[1]; // Obtiene 'sabormarcona'
+        const baseUrl = '/' + contextPath + '/incidencias';
+
         function cargarIncidenciaParaEditar(incidenciaId) {
             const form = document.getElementById('editIncidenciaForm');
-            form.action = '/incidencias/' + incidenciaId + '/editar';
+            form.action = `${baseUrl}/${incidenciaId}/editar`;
 
             const tabla = document.querySelector('table tbody');
             const filas = tabla.querySelectorAll('tr');
@@ -306,11 +310,8 @@
                 if (datosIncidencia.trabajadorId) {
                     document.getElementById('editTrabajador').value = datosIncidencia.trabajadorId;
                 }
-
-                console.log('Incidencia cargada:', datosIncidencia);
             } else {
-                console.warn('No se encontraron los datos de la incidencia');
-                alert('Error al cargar los datos de la incidencia');
+                // Silencio si no se encuentran datos
             }
         }
 

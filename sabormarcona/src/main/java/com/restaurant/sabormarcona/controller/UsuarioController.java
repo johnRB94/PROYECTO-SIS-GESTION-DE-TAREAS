@@ -3,6 +3,7 @@ package com.restaurant.sabormarcona.controller;
 import com.restaurant.sabormarcona.exception.DuplicateResourceException;
 import com.restaurant.sabormarcona.exception.ResourceNotFoundException;
 import com.restaurant.sabormarcona.model.Usuario;
+import com.restaurant.sabormarcona.repository.UsuarioRepository;
 import com.restaurant.sabormarcona.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
 
     private boolean verificarAutenticacion(HttpSession session, RedirectAttributes redirectAttributes) {
         Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
@@ -78,19 +80,18 @@ public class UsuarioController {
     }
 
     // CREATE - MOSTRAR FORMULARIO (GET /usuarios/nuevo)
+    // Acceso PÚBLICO - Sin autenticación requerida para ver el formulario de
+    // registro
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        log.info("=== GET /usuarios/nuevo - Mostrando formulario ===");
-
-        if (!verificarAutenticacion(session, redirectAttributes)) {
-            return "redirect:/";
-        }
+        log.info("=== GET /usuarios/nuevo - Mostrando formulario (acceso público) ===");
 
         model.addAttribute("usuario", new Usuario());
         return "vista/nuevo"; // Retorna templates/vista/nuevo.html
     }
 
     // CREATE - PROCESAR FORMULARIO (POST /usuarios/nuevo)
+    // Acceso PÚBLICO - Sin autenticación requerida para registrarse
     @PostMapping("/nuevo")
     public String crearUsuario(@Valid @ModelAttribute("usuario") Usuario usuario,
             BindingResult result,
@@ -99,11 +100,7 @@ public class UsuarioController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        log.info("=== POST /usuarios/nuevo - Creando usuario: {} ===", usuario.getUsername());
-
-        if (!verificarAutenticacion(session, redirectAttributes)) {
-            return "redirect:/";
-        }
+        log.info("=== POST /usuarios/nuevo - Creando usuario: {} (acceso público) ===", usuario.getUsername());
 
         if (result.hasErrors()) {
             log.warn("Errores de validación: {}", result.getAllErrors());
@@ -130,6 +127,7 @@ public class UsuarioController {
             redirectAttributes.addFlashAttribute("mensajeExito",
                     "Empleado " + usuarioGuardado.getNombre() + " registrado exitosamente");
 
+            // Mantener al usuario en la página de registro después de crear
             return "redirect:/usuarios/nuevo";
 
         } catch (DuplicateResourceException e) {
@@ -242,5 +240,49 @@ public class UsuarioController {
         }
 
         return "redirect:/usuarios";
+    }
+
+    // REST API - OBTENER TODOS LOS USUARIOS
+    // Acceso PÚBLICO - Sin autenticación requerida (para modal y listados públicos)
+    @GetMapping("/api/usuarios")
+    @ResponseBody
+    public List<Usuario> obtenerUsuariosApi() {
+        log.debug("GET /api/usuarios - Obteniendo todos los usuarios (acceso público)");
+        return usuarioService.obtenerTodos();
+    }
+
+    // REST API - OBTENER UN USUARIO
+    // Acceso PÚBLICO - Sin autenticación requerida
+    @GetMapping("/api/usuarios/{id}")
+    @ResponseBody
+    public Usuario obtenerUsuarioApi(@PathVariable Long id) {
+        log.debug("GET /api/usuarios/{} - Obteniendo usuario (acceso público)", id);
+        return usuarioService.findById(id);
+    }
+
+    // REST API - ACTUALIZAR USUARIO
+    @PutMapping("/api/usuarios/{id}")
+    @ResponseBody
+    public Usuario actualizarUsuarioApi(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
+        log.debug("PUT /api/usuarios/{} - Actualizando usuario", id);
+
+        try {
+            Usuario usuarioExistente = usuarioService.findById(id);
+
+            if (usuarioActualizado.getCargo() != null) {
+                usuarioExistente.setCargo(usuarioActualizado.getCargo());
+            }
+            if (usuarioActualizado.getRol() != null) {
+                usuarioExistente.setRol(usuarioActualizado.getRol());
+            }
+            usuarioExistente.setActivo(usuarioActualizado.isActivo());
+
+            usuarioRepository.save(usuarioExistente);
+            log.info("Usuario actualizado exitosamente: {}", id);
+            return usuarioExistente;
+        } catch (ResourceNotFoundException e) {
+            log.warn("Usuario no encontrado: {}", id);
+            throw e;
+        }
     }
 }

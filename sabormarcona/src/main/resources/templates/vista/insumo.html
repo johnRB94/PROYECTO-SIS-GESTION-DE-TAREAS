@@ -143,7 +143,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Cerrar"></button>
                 </div>
-                <form id="formInsumo" action="/insumos" method="post" novalidate>
+                <form id="formInsumo" th:action="@{/insumos}" method="post" novalidate th:attr="data-base-url=@{/insumos}">
                     <div class="modal-body">
                         <input type="hidden" id="insumoId" name="id" value="">
 
@@ -224,7 +224,7 @@
 
             document.getElementById('insumoId').value = '';
 
-            formInsumo.action = '/insumos';
+            formInsumo.action = formInsumo.dataset.baseUrl || '/insumos';
 
             document.getElementById('tituloModal').textContent = 'Nuevo Insumo';
             document.getElementById('textoBoton').textContent = 'Guardar';
@@ -243,7 +243,7 @@
             document.getElementById('stock').value = stock;
             document.getElementById('unidad').value = unidad || '';
 
-            formInsumo.action = '/insumos/' + id + '/editar';
+            formInsumo.action = (formInsumo.dataset.baseUrl || '/insumos') + '/' + id + '/editar';
 
             document.getElementById('tituloModal').textContent = 'Editar Insumo';
             document.getElementById('textoBoton').textContent = 'Actualizar';

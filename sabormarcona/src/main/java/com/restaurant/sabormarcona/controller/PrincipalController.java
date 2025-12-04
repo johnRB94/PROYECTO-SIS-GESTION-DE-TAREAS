@@ -67,6 +67,8 @@ public class PrincipalController {
             model.addAttribute("tareasPróximas", tareaService.obtenerTareasPendientesProximas());
 
             model.addAttribute("usuarioActual", usuario);
+            model.addAttribute("rol", usuario.getRol() != null ? usuario.getRol() : "Usuario");
+            model.addAttribute("usuario", usuario.getNombre());
 
             log.info("Dashboard cargado exitosamente para usuario: {}", usuario.getUsername());
 
