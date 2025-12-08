@@ -1,14 +1,118 @@
-    <footer class="footer mt-auto py-3 bg-dark text-center text-white" th:fragment="footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 mb-2 mb-md-0">
-                    <span>&copy; 2025 Sabor de Marcona. Todos los derechos reservados.</span>
-                </div>
-                <div class="col-md-6">
-                    <a href="#" class="text-white me-3"><i class="fa-brands fa-facebook fa-lg"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fa-brands fa-instagram fa-lg"></i></a>
-                    <a href="#" class="text-white"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
-                </div>
+<footer class="footer py-3 bg-dark text-center text-white" th:fragment="footer">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <span>&copy; 2025 Sabor de Marcona. Todos los derechos reservados.</span>
+            </div>
+            <div class="col-md-6">
+                <a href="#" class="text-white me-3"><i class="fa-brands fa-facebook fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fa-brands fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-white"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
+
+
+
+<script>
+    async function cargarAuthInfo() {
+        try {
+            const response = await fetch('/sabormarcona/auth-info');
+            if (!response.ok) throw new Error(`Error ${response.status}`);
+            const data = await response.json();
+
+            console.group('%c INFORMACIÓN DE AUTENTICACIÓN', 'color: #00ff00; font-size: 16px; font-weight: bold;');
+            
+            if (data.authenticated) {
+                console.log('%c USUARIO AUTENTICADO', 'color: #00ff00; font-weight: bold; font-size: 14px;');
+                console.log('%c Usuario:', 'color: #00bfff; font-weight: bold;', data.username);
+                console.log('%c Roles:', 'color: #00bfff; font-weight: bold;', data.roles);
+            } else {
+                console.log('%c NO AUTENTICADO', 'color: #ffaa00; font-weight: bold; font-size: 14px;');
+            }
+            console.groupEnd();
+
+            // TOKEN JWT - Llamar a tu API de login
+            console.group('%c TOKEN JWT', 'color: #ff6b6b; font-size: 16px; font-weight: bold;');
+            if (data.authenticated) {
+                await obtenerTokenJWT(data.username);
+            } else {
+                console.log('%c Haz login para generar JWT', 'color: #ffaa00;');
+            }
+            console.groupEnd();
+
+            window.authData = data;
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    }
+
+    // Función para obtener token JWT
+    async function obtenerTokenJWT(username) {
+        try {
+            const response = await fetch('/sabormarcona/api/auth/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username })
+            });
+            
+            if (response.ok) {
+                const tokenData = await response.json();
+                const token = tokenData.token;
+                
+                console.log('%c TOKEN GENERADO:', 'color: #ffd700; font-weight: bold;', token.substring(0, 50) + '...');
+                
+                // Decodificar JWT
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.group('%c JWT PAYLOAD', 'color: #f39c12; font-size: 14px;');
+                console.table({
+                    username: payload.sub,
+                    expira: new Date(payload.exp * 1000).toLocaleString('es-PE'),
+                    emitido: new Date(payload.iat * 1000).toLocaleString('es-PE')
+                });
+                console.groupEnd();
+                
+                // Guardar token
+                localStorage.setItem('jwt_token', token);
+                console.log('%c Token guardado en localStorage', 'color: #27ae60;');
+                
+                window.currentToken = token;
+            } else {
+                console.log('%c Error generando token', 'color: #e74c3c;');
+            }
+        } catch (error) {
+            console.log('%c Error obteniendo JWT:', 'color: #e67e22;', error.message);
+        }
+    }
+
+    // Ver token guardado
+    function verTokenGuardado() {
+        const token = localStorage.getItem('jwt_token');
+        if (token) {
+            console.group('%c TOKEN GUARDADO', 'color: #9b59b6; font-size: 16px;');
+            console.log('Token:', token.substring(0, 50) + '...');
+            
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            console.table(payload);
+            console.groupEnd();
+        } else {
+            console.log('No hay token guardado');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarAuthInfo);
+    
+    // Funciones globales
+    window.verAuth = cargarAuthInfo;
+    window.generarToken = (username) => obtenerTokenJWT(username);
+    window.verToken = verTokenGuardado;
+    window.limpiarToken = () => {
+        localStorage.removeItem('jwt_token');
+        console.log('Token eliminado');
+    };
+
+    console.log('%c FUNCIONES DISPONIBLES:\nverAuth() - verToken() - generarToken("admin") - limpiarToken()', 'color: #00ff88; font-weight: bold;');
+</script>
+
+

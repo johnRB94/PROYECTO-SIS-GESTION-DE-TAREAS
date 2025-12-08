@@ -1,14 +1,20 @@
 package com.restaurant.sabormarcona.controller;
 
-import com.restaurant.sabormarcona.model.Usuario;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -16,7 +22,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class InicioController {
 
     @GetMapping("/")
-    public String mostrarInicio(Model model, HttpSession session) {
+    public String mostrarInicio(
+            @RequestParam(required = false) String error,
+            @RequestParam(required = false) String logout,
+            Model model,
+            HttpSession session) {
         log.debug("GET / - Mostrando página de inicio");
 
         // Verificar si ya está autenticado
@@ -26,10 +36,7 @@ public class InicioController {
             return "redirect:/principal";
         }
 
-        // Verificar parámetros de error o logout
-        String error = (String) model.asMap().get("error");
-        String logout = (String) model.asMap().get("logout");
-
+        // Manejar parámetros de error o logout
         if (error != null) {
             model.addAttribute("error", "Usuario o contraseña incorrectos");
         }
@@ -41,19 +48,35 @@ public class InicioController {
         return "vista/inicio";
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        log.debug("GET /logout - Cerrando sesión");
+    @GetMapping("/auth-info")
+    @ResponseBody
+    public Map<String, Object> getAuthInfo(Authentication authentication) {
+        Map<String, Object> authInfo = new HashMap<>();
 
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario != null) {
-            log.info("Usuario {} cerró sesión", usuario.getUsername());
+        if (authentication != null && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser")) {
+
+            String username = authentication.getName();
+            String roles = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(", "));
+
+            authInfo.put("authenticated", true);
+            authInfo.put("username", username);
+            authInfo.put("roles", roles);
+            authInfo.put("timestamp", System.currentTimeMillis());
+
+            log.info("Auth info solicitada para: {} | Roles: {}", username, roles);
+        } else {
+            authInfo.put("authenticated", false);
+            authInfo.put("username", "anonymous");
+            authInfo.put("roles", "NONE");
+            authInfo.put("timestamp", System.currentTimeMillis());
+
+            log.debug("Solicitud de auth info sin autenticación");
         }
 
-        session.invalidate();
-        SecurityContextHolder.clearContext();
-
-        return "redirect:/?logout=true";
+        return authInfo;
     }
 
     @GetMapping("/acceso-denegado")

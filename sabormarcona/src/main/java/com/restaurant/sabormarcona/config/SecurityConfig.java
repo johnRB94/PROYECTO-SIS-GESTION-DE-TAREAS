@@ -72,8 +72,12 @@ public class SecurityConfig {
                                                 .requestMatchers("/usuarios/nuevo").permitAll()
                                                 .requestMatchers("/debug/**").permitAll()
 
+                                                // Auth-info accesible para todos (autenticados y anónimos)
+                                                .requestMatchers("/auth-info").permitAll()
+
                                                 // Admin tiene acceso a todo
-                                                .requestMatchers("/principal", "/menu/**", "/usuarios/**")
+                                                .requestMatchers("/principal").authenticated() // Solo autenticados
+                                                .requestMatchers("/menu/**", "/usuarios/**")
                                                 .hasAnyRole("ADMIN", "USER1", "USER2")
                                                 .requestMatchers("/nuevo").hasRole("ADMIN")
 

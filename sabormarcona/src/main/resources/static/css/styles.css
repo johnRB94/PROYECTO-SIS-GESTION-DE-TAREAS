@@ -1,44 +1,146 @@
+/* ========== CAROUSEL HERO ========== */
 #hero,
 #blog-carousel,
 #blog-carousel .carousel-inner,
 #blog-carousel .carousel-item {
-  width: 100%;
-  height: 100vh;      
-  height: 100dvh;
+    width: 100%;
+    height: 100vh;      
+    height: 100dvh;
 }
 
 #blog-carousel .carousel-item {
-  position: relative;
-  background: #000;
+    position: relative;
+    background: #000;
 }
 
 #blog-carousel .carousel-item img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;       
-  object-position: center;
-  opacity: 0.25;           
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;       
+    object-position: center;
+    opacity: 0.25;           
 }
 
 @media (max-width: 992px) {
-  #blog-carousel .carousel-item img {
-    object-fit: contain;   
-    opacity: 1;            
-    background: #000;     
-  }
+    #blog-carousel .carousel-item img {
+        object-fit: contain;    
+        opacity: 1;             
+        background: #000;       
+    }
 
-  #blog-carousel .carousel-caption {
-    padding: 0 1rem;
-    backdrop-filter: none; 
-  }
+    #blog-carousel .carousel-caption {
+        padding: 0 1rem;
+        backdrop-filter: none; 
+    }
 }
 
 #blog-carousel .carousel-caption {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* ========== LAYOUT: STICKY FOOTER ========== */
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+/* Fix para páginas con hero full height */
+body > div:first-of-type {
+    flex-shrink: 0;
+}
+
+/* Asegurar que el container principal crezca */
+.container.py-5 {
+    flex: 1 0 auto;
+}
+
+/* ========== MODAL ========== */
+.modal-dialog {
+    margin: 1.5rem auto !important;
+    max-width: 700px !important;  
+    width: 94vw !important;       
+    height: auto !important;
+    max-height: 95dvh !important;
+}
+
+.modal-content {
+    border-radius: 1.2rem !important;
+    max-height: 95dvh !important;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.6);
+}
+
+.modal-body {
+    max-height: 65dvh !important;
+    overflow-y: auto;
+    padding: 2rem;
+    overscroll-behavior: contain;
+}
+
+/* MÓVILES: Más ancho pero cómodo */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.75rem !important;
+        width: 97vw !important;
+        max-width: 550px !important;  /* +50px */
+        height: 92dvh !important;
+    }
+    
+    .modal-content {
+        height: 92dvh !important;
+        border-radius: 1.2rem !important;
+    }
+    
+    .modal-body {
+        height: calc(92dvh - 75px) !important;
+        padding: 1.25rem;
+    }
+}
+
+/* TABLETS: Más ancho */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .modal-dialog {
+        max-width: 750px !important;  /* +100px */
+        width: 90vw !important;
+    }
+}
+
+/* DESKTOP: Un poco más ancho fijo */
+@media (min-width: 992px) {
+    .modal-dialog {
+        max-width: 700px !important;  /* +100px del anterior */
+        width: 700px !important;
+    }
+}
+
+/* Body backdrop optimizado */
+body.modal-open {
+    overflow: hidden !important;
+    padding-right: var(--bs-scrollbar-gutter, 0px) !important;
+}
+
+body.modal-open .navbar,
+body.modal-open main {
+    filter: blur(4px) brightness(0.75);
 }
